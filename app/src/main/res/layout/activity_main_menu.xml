@@ -41,7 +41,7 @@
             android:background="@android:color/holo_blue_light"
             android:layout_marginTop="20dp"
             android:textSize="18sp"
-            android:onClick="onClickQuit" />
+            android:onClick="onGenerateErrorQuit" />
 
         <Button
             android:text="Tic Tac Toe"
@@ -52,7 +52,8 @@
             android:elevation="0dp"
             android:background="@android:color/holo_blue_light"
             android:layout_marginTop="20dp"
-            android:textSize="18sp" />
+            android:textSize="18sp"
+            android:onClick="onClickTicTacToe" />
 
         <Button
             android:text="Quit"
