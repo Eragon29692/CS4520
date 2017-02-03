@@ -1,7 +1,11 @@
 package edu.neu.madcourse.duyvu.hellomad;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
+import android.content.pm.PackageManager;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.telephony.TelephonyManager;
@@ -11,12 +15,14 @@ import edu.neu.madcourse.duyvu.R;
 
 public class AboutMe extends AppCompatActivity {
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_about_me);
         TextView textViewTitle = (TextView) findViewById(R.id.about_me_imei);
-        TelephonyManager telephonyManager = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
+        TelephonyManager telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
         textViewTitle.setText("IMEI: " + telephonyManager.getDeviceId());
     }
 }

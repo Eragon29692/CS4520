@@ -10,4 +10,78 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="edu.neu.madcourse.duyvu.dictionary.DictionaryMainActivity">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:inputType="text"
+                android:ems="10"
+                android:id="@+id/dictionaryEditText"
+                android:layout_weight="1"
+                android:singleLine="true"
+                android:selectAllOnFocus="false"
+                android:background="@android:color/white"
+                android:textColor="@android:color/black"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp" />
+
+            <Button
+                android:id="@+id/dictionaryClearButton"
+                style="@style/Widget.AppCompat.Button.Colored"
+                android:layout_width="51dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.04"
+                android:background="@android:color/holo_blue_light"
+                android:elevation="0dp"
+                android:text="Clear"
+                android:textSize="18sp"
+                android:textAllCaps="false" />
+        </LinearLayout>
+
+        <ListView
+            android:id="@+id/dictionaryListView"
+            android:layout_width="match_parent"
+            android:layout_height="190dp"
+            android:scrollingCache="false"
+            android:layout_marginTop="20dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center|bottom"
+            android:layout_weight="1">
+
+            <Button
+                android:id="@+id/dictionaryReturnButton"
+                style="@style/Widget.AppCompat.Button.Colored"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:color/holo_blue_light"
+                android:text="Return"
+                android:layout_weight="0.25"
+                android:onClick="onClickReturn" />
+
+            <Button
+                android:id="@+id/dictionaryAcknowledgementsButton"
+                style="@style/Widget.AppCompat.Button.Colored"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:color/holo_blue_light"
+                android:layout_weight="0.38"
+                android:text="Acknowledgements"
+                android:layout_marginLeft="5dp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
 </RelativeLayout>

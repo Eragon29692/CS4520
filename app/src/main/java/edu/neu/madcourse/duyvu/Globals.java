@@ -3,29 +3,28 @@ package edu.neu.madcourse.duyvu;
 import android.app.Application;
 
 import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.HashSet;
+import java.util.HashMap;
 
-/**
- * Created by duyvu on 2/3/2017.
- */
 
 public class Globals extends Application{
-    private HashSet<String> dictionary = new HashSet<String>();
+    private HashMap<String, Integer> dictionary = new HashMap<>();
 
     public void setDictionary() {
-        InputStream fis = null;
         try {
-            fis = new FileInputStream("raw/wordlist.txt");
+            InputStream fis = getResources().openRawResource(R.raw.wordlist_80);
             BufferedReader r = new BufferedReader( new InputStreamReader(fis));
             String line;
 
             while ((line = r.readLine()) != null) {
-                dictionary.add(line);
+
+                String[] lineProcess = line.split(",");
+                for (int i = 80; i < 100 && i < lineProcess.length; i++) {
+                    dictionary.put(lineProcess[i], 0);
+                }
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -35,7 +34,7 @@ public class Globals extends Application{
     }
 
     public boolean checkDictionary(String word) {
-        return dictionary.contains(word);
+        return dictionary.containsKey(word);
     }
 
 }

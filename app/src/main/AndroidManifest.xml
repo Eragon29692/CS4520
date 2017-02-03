@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="edu.neu.madcourse.duyvu">
+
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+
     <application
+        android:name=".Globals"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -18,17 +21,19 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".hellomad.AboutMe"
-            android:screenOrientation="portrait">
-        </activity>
         <activity
-            android:name="edu.neu.madcourse.duyvu.tictactoe.MainActivity"
-            android:screenOrientation="portrait" >
-        </activity>
+            android:name=".hellomad.AboutMe"
+            android:screenOrientation="portrait" />
         <activity
-            android:name="edu.neu.madcourse.duyvu.tictactoe.GameActivity"
-            android:screenOrientation="portrait" >
-        </activity>
+            android:name=".tictactoe.MainActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".tictactoe.GameActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".dictionary.DictionaryMainActivity"
+            android:label="@string/test_dictionary"/>
+
     </application>
 
 </manifest>

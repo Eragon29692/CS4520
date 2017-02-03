@@ -27,7 +27,7 @@
             style="@style/Widget.AppCompat.Button.Colored"
             android:elevation="0dp"
             android:background="@android:color/holo_blue_light"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="10dp"
             android:textSize="18sp"
             android:onClick="onClickAbout" />
 
@@ -39,7 +39,7 @@
             style="@style/Widget.AppCompat.Button.Colored"
             android:elevation="0dp"
             android:background="@android:color/holo_blue_light"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="15dp"
             android:textSize="18sp"
             android:onClick="onGenerateErrorQuit" />
 
@@ -51,9 +51,21 @@
             style="@style/Widget.AppCompat.Button.Colored"
             android:elevation="0dp"
             android:background="@android:color/holo_blue_light"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="15dp"
             android:textSize="18sp"
             android:onClick="onClickTicTacToe" />
+
+        <Button
+            android:text="Dictionary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/dictionaryButton"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:elevation="0dp"
+            android:background="@android:color/holo_blue_light"
+            android:layout_marginTop="15dp"
+            android:textSize="18sp"
+            android:onClick="onClickDictionary" />
 
         <Button
             android:text="Quit"
@@ -63,7 +75,7 @@
             style="@style/Widget.AppCompat.Button.Colored"
             android:elevation="1dp"
             android:background="@android:color/holo_blue_light"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="15dp"
             android:textSize="18sp"
             android:onClick="onClickQuit" />
     </LinearLayout>
