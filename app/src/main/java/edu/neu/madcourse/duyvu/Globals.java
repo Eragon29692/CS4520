@@ -22,7 +22,7 @@ public class Globals extends Application{
             while ((line = r.readLine()) != null) {
 
                 String[] lineProcess = line.split(",");
-                for (int i = 80; i < 100 && i < lineProcess.length; i++) {
+                for (int i = 0; i < 80 && i < lineProcess.length; i++) {
                     dictionary.put(lineProcess[i], 0);
                 }
             }
