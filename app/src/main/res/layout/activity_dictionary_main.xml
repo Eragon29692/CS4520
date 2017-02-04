@@ -80,7 +80,8 @@
                 android:background="@android:color/holo_blue_light"
                 android:layout_weight="0.38"
                 android:text="Acknowledgements"
-                android:layout_marginLeft="5dp" />
+                android:layout_marginLeft="5dp"
+                android:onClick="onClickAcknowledgement"/>
 
         </LinearLayout>
 

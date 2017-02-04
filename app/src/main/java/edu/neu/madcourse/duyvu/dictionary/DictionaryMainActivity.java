@@ -1,5 +1,7 @@
 package edu.neu.madcourse.duyvu.dictionary;
 
+import android.content.Intent;
+import android.media.MediaPlayer;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -20,6 +22,7 @@ import edu.neu.madcourse.duyvu.R;
 public class DictionaryMainActivity extends AppCompatActivity {
     private ArrayList<String> listItems = new ArrayList<String>();
     private ListView listView;
+    private MediaPlayer mMediaPlayer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,7 +32,8 @@ public class DictionaryMainActivity extends AppCompatActivity {
         editText.addTextChangedListener(onTextChange);
         listView = (ListView) findViewById(R.id.dictionaryListView);
         listView.setAdapter(new ArrayAdapter<String>(this, R.layout.dictionary_listview_text, listItems));
-        listView.smoothScrollToPosition(listItems.size() - 2);
+        mMediaPlayer = MediaPlayer.create(this, R.raw.beep_sound);
+        mMediaPlayer.setVolume(1f, 1f);
     }
 
     public void onClickClear(View view)
@@ -43,6 +47,12 @@ public class DictionaryMainActivity extends AppCompatActivity {
         finish();
     }
 
+    public void onClickAcknowledgement(View view)
+    {
+        Intent intent = new Intent(DictionaryMainActivity.this, DictionaryAcknowledgeActivity.class);
+        startActivity(intent);
+    }
+
     private TextWatcher onTextChange = new TextWatcher() {
 
         @Override
@@ -54,12 +64,20 @@ public class DictionaryMainActivity extends AppCompatActivity {
         @Override
         public void afterTextChanged(Editable s) {
             Globals dictionary = (Globals)getApplication();
-            if (dictionary.checkDictionary(s.toString().toLowerCase())) {
+            if (s.length() >=3 && dictionary.checkDictionary(s.toString().toLowerCase())) {
+                mMediaPlayer.start();
                 if (!listItems.contains(s.toString())) {
-                    listItems.add(s.toString());
+                    listItems.add(s.toString().toLowerCase());
                     ((BaseAdapter) listView.getAdapter()).notifyDataSetChanged();
+                    //listView.smoothScrollToPosition(listItems.size());
+                    listView.post(new Runnable(){
+                        public void run() {
+                            listView.setSelection(listView.getCount() - 1);
+                        }});
                 }
             }
         }
     };
+
+
 }

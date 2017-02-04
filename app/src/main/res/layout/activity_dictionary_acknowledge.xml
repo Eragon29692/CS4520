@@ -10,4 +10,16 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="edu.neu.madcourse.duyvu.dictionary.DictionaryAcknowledgeActivity">
 
+    <TextView
+        android:text="1)  My stragegy is to reduce the number of I/O readline when reading from file.\nTherefore I created a script called reducedIO.py to append all the words together into one line comma sepparated.\nHowever each line is limited to 80 words and all word should only start with the same alphabet letter\n\n2)  I have not use any additional images/icons/graphics for this assignment\n\n3)  No outside code\n\n4)  No additional help from the slides and piazza"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:id="@+id/textView"
+        android:textAllCaps="false"
+        android:gravity="center_vertical"
+        android:textStyle="normal|bold"
+        android:textColor="@android:color/white" />
 </RelativeLayout>
