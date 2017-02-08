@@ -38,6 +38,8 @@ public class DictionaryMainActivity extends AppCompatActivity {
 
     public void onClickClear(View view)
     {
+        EditText editText = (EditText) findViewById(R.id.dictionaryEditText);
+        editText.setText("");
         listItems.clear();
         ((BaseAdapter) listView.getAdapter()).notifyDataSetChanged();
     }

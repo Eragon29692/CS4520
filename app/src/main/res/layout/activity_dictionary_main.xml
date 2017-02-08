@@ -27,7 +27,6 @@
                 android:ems="10"
                 android:id="@+id/dictionaryEditText"
                 android:layout_weight="1"
-                android:singleLine="true"
                 android:selectAllOnFocus="false"
                 android:background="@android:color/white"
                 android:textColor="@android:color/black"
@@ -53,7 +52,8 @@
             android:layout_width="match_parent"
             android:layout_height="190dp"
             android:scrollingCache="false"
-            android:layout_marginTop="20dp" />
+            android:layout_marginTop="20dp"
+            android:layout_weight="14.75" />
 
         <LinearLayout
             android:layout_width="match_parent"
