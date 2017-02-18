@@ -12,4 +12,5 @@
     <color name="purple_color">#7f007f</color>
     <color name="red_color">#ff7f7f</color>
     <color name="thinking_background_color">#cfdfdfdf</color>
+    <color name="wgcolor_tile">#f3797e94</color>
 </resources>

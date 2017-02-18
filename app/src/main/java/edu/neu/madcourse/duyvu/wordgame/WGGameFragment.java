@@ -16,6 +16,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -50,6 +51,33 @@ public class WGGameFragment extends Fragment {
     //letter board
     private String[][] boardGame = new String[9][9];
     private Random randomGenerator = new Random();
+    //flag for restoring letter orders
+    private boolean restore = false;
+
+    public static int LONG_PRESS_TIME = 800; // Time in miliseconds
+    public static int PRESS_TIME = 400; // Time in miliseconds
+
+    private Handler longPressHandler = new Handler();
+    private Handler pressHandler = new Handler();
+
+    Runnable longPressed = new Runnable() {
+        public void run() {
+            longPress = true;
+            singleTap = false;
+            ((WGGameActivity) getActivity()).finishThinking();
+            Log.i("info", "LongPress");
+        }
+    };
+    Runnable pressEvent = new Runnable() {
+        public void run() {
+            longPress = false;
+            singleTap = false;
+            ((WGGameActivity) getActivity()).startThinking();
+            longPressHandler.postDelayed(longPressed, LONG_PRESS_TIME);
+        }
+    };
+    boolean longPress = false;
+    boolean singleTap = true;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -62,27 +90,35 @@ public class WGGameFragment extends Fragment {
         mSoundO = mSoundPool.load(getActivity(), R.raw.sergenious_moveo, 1);
         mSoundMiss = mSoundPool.load(getActivity(), R.raw.erkanozan_miss, 1);
         mSoundRewind = mSoundPool.load(getActivity(), R.raw.joanne_rewind, 1);
-        dictionary  = (Globals)this.getActivity().getApplication();
+        dictionary = (Globals) this.getActivity().getApplication();
+
+        //create board game
+        makeLetterBoard();
     }
 
     @Override
     public void onStart() {
-        for (int i = 0; i < 9; i++) {
-            for (int k = 0; k < 9; k++) {
-                makeLetterBoard();
-            }
+        longPress = false;
+        singleTap = true;
+        if (restore) {
+            restore = false;
+            super.onStart();
+            return;
         }
+        makeLetterBoard();
+        updateAllTiles();
         super.onStart();
     }
 
     private void makeLetterBoard() {
         int[] order;
         String word;
-        for (int i = 0; i < 9; i++) {
+        for (int m = 0; m < 9; m++) {
             order = setWordOrder();
             word = dictionary.get9WordString();
-            for (int k = 0; k < 9; k++) {
-                mSmallTiles[i][order[k]].setLetter(Character.toString(word.charAt(k)));
+            Log.d("tag", word);
+            for (int n = 0; n < 9; n++) {
+                mSmallTiles[m][order[n]].setLetter(Character.toString(word.charAt(n)));
             }
         }
     }
@@ -91,15 +127,24 @@ public class WGGameFragment extends Fragment {
         int start = randomGenerator.nextInt(9);
         int[] order;
         switch (start) {
-            case 1: order = new int[] {1, 2, 4, 5, 8, 7, 6, 3, 0};
-            case 2: order = new int[] {2, 4, 6, 7, 8, 5, 1, 0, 3};
-            case 3: order = new int[] {3, 0, 1, 2, 5, 8, 4, 7, 6};
-            case 4: order = new int[] {4, 8, 5, 7, 6, 3, 0, 1, 2};
-            case 5: order = new int[] {5, 8, 7, 6, 4, 2, 1, 3, 0};
-            case 6: order = new int[] {6, 4, 2, 5, 1, 0, 3, 7, 8};
-            case 7: order = new int[] {7, 4, 6, 3, 0, 1, 2, 5, 8};
-            case 8: order = new int[] {8, 5, 2, 1, 0, 4, 6, 7, 3};
-            default: order = new int[] {0, 1, 2, 4, 3, 6, 7, 5, 8};
+            case 1:
+                order = new int[]{1, 2, 4, 5, 8, 7, 6, 3, 0};
+            case 2:
+                order = new int[]{2, 4, 6, 7, 8, 5, 1, 0, 3};
+            case 3:
+                order = new int[]{3, 0, 1, 2, 5, 8, 4, 7, 6};
+            case 4:
+                order = new int[]{4, 8, 5, 7, 6, 3, 0, 1, 2};
+            case 5:
+                order = new int[]{5, 8, 7, 6, 4, 2, 1, 3, 0};
+            case 6:
+                order = new int[]{6, 4, 2, 5, 1, 0, 3, 7, 8};
+            case 7:
+                order = new int[]{7, 4, 6, 3, 0, 1, 2, 5, 8};
+            case 8:
+                order = new int[]{8, 5, 2, 1, 0, 4, 6, 7, 3};
+            default:
+                order = new int[]{0, 1, 2, 4, 3, 6, 7, 5, 8};
         }
         return order;
     }
@@ -109,8 +154,10 @@ public class WGGameFragment extends Fragment {
     }
 
     private void addAvailable(WGTile tile) {
-        tile.animate();
-        mAvailable.add(tile);
+        if (!tile.unavailable) {
+            tile.animate();
+            mAvailable.add(tile);
+        }
     }
 
     public boolean isAvailable(WGTile tile) {
@@ -141,22 +188,44 @@ public class WGGameFragment extends Fragment {
                 final WGTile smallTile = mSmallTiles[large][small];
                 smallTile.setView(inner);
                 // ...
-                inner.setOnClickListener(new View.OnClickListener() {
+                inner.setOnTouchListener(new View.OnTouchListener() {
                     @Override
-                    public void onClick(View view) {
-                        smallTile.animate();
-                        // ...
-                        if (isAvailable(smallTile)) {
-                            ((WGGameActivity) getActivity()).startThinking();
-                            mSoundPool.play(mSoundX, mVolume, mVolume, 1, 0, 1f);
-                            makeMove(fLarge, fSmall);
-                            //comment think out for part one of this assignment 5
-                            //think();
-                        } else {
-                            mSoundPool.play(mSoundMiss, mVolume, mVolume, 1, 0, 1f);
+                    public boolean onTouch(View view, MotionEvent event) {
+                        switch(event.getAction()){
+                            case MotionEvent.ACTION_DOWN:
+                                pressHandler.postDelayed(pressEvent, PRESS_TIME);
+                                break;
+                            case MotionEvent.ACTION_MOVE:
+                                pressHandler.removeCallbacks(pressEvent);
+                                longPressHandler.removeCallbacks(longPressed);
+                                ((WGGameActivity) getActivity()).stopThinking();
+                                break;
+                            case MotionEvent.ACTION_UP:
+                                pressHandler.removeCallbacks(pressEvent);
+                                longPressHandler.removeCallbacks(longPressed);
+                                ((WGGameActivity) getActivity()).stopThinking();
+
+                                if(!longPress && singleTap) {
+                                    //..........................................comment out animation for now
+                                    //smallTile.animate();
+                                    // ...
+                                    if (isAvailable(smallTile)) {
+                                        //.....................................comment out thinking for now
+                                        //((WGGameActivity) getActivity()).startThinking();
+                                        mSoundPool.play(mSoundX, mVolume, mVolume, 1, 0, 1f);
+                                        makeMove(fLarge, fSmall);
+                                        //.................comment think out for part one of this assignment 5
+                                        //think();
+                                    }
+                                }
+                                longPress = false;
+                                singleTap = true;
+                                break;
                         }
+                        return true;
                     }
                 });
+
                 // ...
             }
         }
@@ -234,7 +303,8 @@ public class WGGameFragment extends Fragment {
         WGTile smallTile = mSmallTiles[large][small];
         WGTile largeTile = mLargeTiles[large];
         smallTile.setOwner(mPlayer);
-        setAvailableFromLastMove(small);
+        //put large for better gameplay
+        setAvailableFromLastMove(large);
         WGTile.Owner oldWinner = largeTile.getOwner();
         WGTile.Owner winner = largeTile.findWinner();
         if (winner != oldWinner) {
@@ -254,6 +324,7 @@ public class WGGameFragment extends Fragment {
         // ...
         initGame();
         initViews(getView());
+        makeLetterBoard();
         updateAllTiles();
     }
 
@@ -312,7 +383,9 @@ public class WGGameFragment extends Fragment {
         }
     }
 
-    /** Create a string containing the state of the game. */
+    /**
+     * Create a string containing the state of the game.
+     */
     public String getState() {
         StringBuilder builder = new StringBuilder();
         builder.append(mLastLarge);
@@ -322,25 +395,32 @@ public class WGGameFragment extends Fragment {
         for (int large = 0; large < 9; large++) {
             for (int small = 0; small < 9; small++) {
                 builder.append(mSmallTiles[large][small].getOwner().name());
+                builder.append(":" + mSmallTiles[large][small].getLetter());
                 builder.append(',');
             }
         }
         return builder.toString();
     }
 
-    /** Restore the state of the game from the given string. */
+    /**
+     * Restore the state of the game from the given string.
+     */
     public void putState(String gameData) {
+        restore = true;
         String[] fields = gameData.split(",");
         int index = 0;
         mLastLarge = Integer.parseInt(fields[index++]);
         mLastSmall = Integer.parseInt(fields[index++]);
         for (int large = 0; large < 9; large++) {
             for (int small = 0; small < 9; small++) {
-                WGTile.Owner owner = WGTile.Owner.valueOf(fields[index++]);
+                String[] values = fields[index++].split(":");
+                WGTile.Owner owner = WGTile.Owner.valueOf(values[0]);
                 mSmallTiles[large][small].setOwner(owner);
+                if (values.length > 1)
+                    mSmallTiles[large][small].setLetter(values[1]);
             }
         }
-        setAvailableFromLastMove(mLastSmall);
+        setAvailableFromLastMove(mLastLarge);
         updateAllTiles();
     }
 }
