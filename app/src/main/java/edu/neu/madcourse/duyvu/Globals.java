@@ -7,14 +7,13 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Random;
 
 
 public class Globals extends Application{
-    private HashMap<String, Integer> dictionary = new HashMap<>();
     private ArrayList<String> arrayDictionary = new ArrayList<>();
+    private Random randomGenerator = new Random();
     int loadState = 0;
     public void setDictionary() {
         try {
@@ -26,7 +25,8 @@ public class Globals extends Application{
             else if (loadState == 1) {
                 fis = getResources().openRawResource(R.raw.wordlist_150_2);
                 loadState = 2;
-            } else {
+            }
+            else {
                 return;
             }
             BufferedReader r = new BufferedReader( new InputStreamReader(fis));
@@ -52,6 +52,15 @@ public class Globals extends Application{
 
     public boolean checkDictionary(String word) {
         return arrayDictionary.contains(word);
+    }
+
+    public String get9WordString() {
+        int size = arrayDictionary.size();
+        int index = randomGenerator.nextInt(size);
+        while (arrayDictionary.get(index).length() != 9) {
+            index = randomGenerator.nextInt(size);
+        }
+        return arrayDictionary.get(index);
     }
 
 }

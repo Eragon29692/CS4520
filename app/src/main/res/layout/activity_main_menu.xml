@@ -28,8 +28,8 @@
             android:elevation="0dp"
             android:background="@android:color/holo_blue_light"
             android:layout_marginTop="5dp"
-            android:textSize="18sp"
-            android:onClick="onClickAbout" />
+            android:onClick="onClickAbout"
+            android:textSize="18sp" />
 
         <Button
             android:text="Generate Error"

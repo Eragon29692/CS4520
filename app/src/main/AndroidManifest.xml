@@ -32,14 +32,16 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".wordgame.WGGameActivity"
+            android:label="Scroggle"
             android:screenOrientation="portrait" />
         <activity
             android:name=".wordgame.WGMainActivity"
-            android:screenOrientation="portrait" />
+            android:label="Scroggle"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".dictionary.DictionaryMainActivity"
             android:label="@string/test_dictionary"
-            android:screenOrientation="portrait" />/>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".dictionary.DictionaryAcknowledgeActivity"
             android:label="@string/test_dictionary"

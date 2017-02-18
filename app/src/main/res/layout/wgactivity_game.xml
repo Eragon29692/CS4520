@@ -6,42 +6,53 @@
  ! We make no guarantees that this code is fit for any purpose. 
  ! Visit http://www.pragmaticprogrammer.com/titles/eband4 for more book information.
 -->
-<FrameLayout
-   xmlns:android="http://schemas.android.com/apk/res/android"
-   xmlns:tools="http://schemas.android.com/tools"
-   android:layout_width="match_parent"
-   android:layout_height="match_parent"
-   tools:context=".WGActivity">
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".WGActivity">
 
-   <ImageView
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:scaleType="centerCrop"
-      android:src="@drawable/sandy_beach"/>
 
-   <LinearLayout
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:gravity="center"
-      android:orientation="vertical">
+    <include layout="@layout/wgthinking" />
 
-      <fragment
-         android:id="@+id/wgfragment_game"
-         class="edu.neu.madcourse.duyvu.wordgame.WGGameFragment"
-         android:layout_width="wrap_content"
-         android:layout_height="wrap_content"
-         tools:layout="@layout/wgfragment_game"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical">
 
-      <fragment
-         android:id="@+id/wgfragment_game_controls"
-         class="edu.neu.madcourse.duyvu.wordgame.WGControlFragment"
-         android:layout_width="wrap_content"
-         android:layout_height="wrap_content"
-         tools:layout="@layout/wgfragment_control" />
-      <!-- Control fragment goes here... -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.2"
+            android:gravity="center"
+            android:orientation="vertical">
 
-   </LinearLayout>
+            <fragment
+                android:id="@+id/wgfragment_game"
+                class="edu.neu.madcourse.duyvu.wordgame.WGGameFragment"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                tools:layout="@layout/wgfragment_game" />
+        </LinearLayout>
 
-   <include layout="@layout/wgthinking"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <fragment
+                android:id="@+id/wgfragment_game_controls"
+                class="edu.neu.madcourse.duyvu.wordgame.WGControlFragment"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                tools:layout="@layout/wgfragment_control" />
+            <!-- Control fragment goes here... -->
+        </LinearLayout>
+    </LinearLayout>
 
 </FrameLayout>

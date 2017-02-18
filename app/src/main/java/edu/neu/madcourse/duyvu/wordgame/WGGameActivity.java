@@ -15,17 +15,20 @@ import android.content.DialogInterface;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 
+import edu.neu.madcourse.duyvu.Globals;
 import edu.neu.madcourse.duyvu.R;
 
-public class WGGameActivity extends Activity {
+public class WGGameActivity extends AppCompatActivity {
    public static final String KEY_RESTORE = "key_restore";
    public static final String PREF_RESTORE = "pref_restore";
    private MediaPlayer mMediaPlayer;
    private Handler mHandler = new Handler();
    private WGGameFragment mGameFragment;
+   public Globals dictionary = (Globals)getApplication();
 
    @Override
    protected void onCreate(Bundle savedInstanceState) {

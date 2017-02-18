@@ -12,6 +12,7 @@ import android.animation.Animator;
 import android.animation.AnimatorInflater;
 import android.graphics.drawable.Drawable;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
 
 import edu.neu.madcourse.duyvu.R;
@@ -21,6 +22,7 @@ public class WGTile {
    public enum Owner {
       X, O /* letter O */, NEITHER, BOTH
    }
+   public String letter = "";
 
    // These levels are defined in the drawable definitions
    private static final int LEVEL_X = 0;
@@ -76,14 +78,21 @@ public class WGTile {
       this.mSubTiles = subTiles;
    }
 
+   public void setLetter(String newLetter) {
+       this.letter = newLetter;
+       if (mView instanceof Button) {
+           ((Button) mView).setText(this.letter.toUpperCase());
+       }
+   }
+
    public void updateDrawableState() {
       if (mView == null) return;
       int level = getLevel();
       if (mView.getBackground() != null) {
          mView.getBackground().setLevel(level);
       }
-      if (mView instanceof ImageButton) {
-         Drawable drawable = ((ImageButton) mView).getDrawable();
+      if (mView instanceof Button) {
+         Drawable drawable = ((Button) mView).getBackground();
          drawable.setLevel(level);
       }
    }

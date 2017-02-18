@@ -11,11 +11,12 @@ package edu.neu.madcourse.duyvu.wordgame;
 import android.app.Activity;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 
 import edu.neu.madcourse.duyvu.Globals;
 import edu.neu.madcourse.duyvu.R;
 
-public class WGMainActivity extends Activity {
+public class WGMainActivity extends AppCompatActivity {
    MediaPlayer mMediaPlayer;
    // ...
 

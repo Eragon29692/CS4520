@@ -18,8 +18,7 @@
    <edu.neu.madcourse.duyvu.wordgame.WGScrollingView
       android:id="@+id/wgmain_background"
       android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      app:scrollingDrawable="@drawable/xando_background"/>
+      android:layout_height="match_parent"/>
 
    <fragment
       android:id="@+id/wgmain_fragment"
