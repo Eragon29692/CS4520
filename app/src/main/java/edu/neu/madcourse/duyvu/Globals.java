@@ -15,10 +15,20 @@ import java.util.HashMap;
 public class Globals extends Application{
     private HashMap<String, Integer> dictionary = new HashMap<>();
     private ArrayList<String> arrayDictionary = new ArrayList<>();
-
+    int loadState = 0;
     public void setDictionary() {
         try {
-            InputStream fis = getResources().openRawResource(R.raw.wordlist_150);
+            InputStream fis;
+            if (loadState == 0) {
+                fis = getResources().openRawResource(R.raw.wordlist_150_1);
+                loadState = 1;
+            }
+            else if (loadState == 1) {
+                fis = getResources().openRawResource(R.raw.wordlist_150_2);
+                loadState = 2;
+            } else {
+                return;
+            }
             BufferedReader r = new BufferedReader( new InputStreamReader(fis));
             String line;
 

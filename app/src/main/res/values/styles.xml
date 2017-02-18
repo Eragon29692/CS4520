@@ -8,6 +8,17 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="WGTileButton">
+        <item name="android:layout_width">@dimen/tile_size</item>
+        <item name="android:layout_height">@dimen/tile_size</item>
+        <item name="android:layout_margin">@dimen/tile_margin</item>
+        <item name="android:background">#00000000</item>
+        <item name="android:padding">@dimen/tile_padding</item>
+        <item name="android:scaleType">centerCrop</item>
+        <item name="android:src">@drawable/wgtile</item>
+        <item name="android:drawableTop">@drawable/wgtile</item>
+    </style>
+
     <style name="TileButton">
         <item name="android:layout_width">@dimen/tile_size</item>
         <item name="android:layout_height">@dimen/tile_size</item>

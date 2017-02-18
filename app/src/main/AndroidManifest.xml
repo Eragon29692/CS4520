@@ -31,6 +31,12 @@
             android:name=".tictactoe.GameActivity"
             android:screenOrientation="portrait" />
         <activity
+            android:name=".wordgame.WGGameActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".wordgame.WGMainActivity"
+            android:screenOrientation="portrait" />
+        <activity
             android:name=".dictionary.DictionaryMainActivity"
             android:label="@string/test_dictionary"
             android:screenOrientation="portrait" />/>

@@ -34,6 +34,8 @@ public class DictionaryMainActivity extends AppCompatActivity {
         listView.setAdapter(new ArrayAdapter<String>(this, R.layout.dictionary_listview_text, listItems));
         mMediaPlayer = MediaPlayer.create(this, R.raw.beep_sound);
         mMediaPlayer.setVolume(1f, 1f);
+        Globals dictionary = (Globals)getApplication();
+        dictionary.setDictionary();
     }
 
     public void onClickClear(View view)

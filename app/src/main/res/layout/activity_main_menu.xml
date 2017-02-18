@@ -27,7 +27,7 @@
             style="@style/Widget.AppCompat.Button.Colored"
             android:elevation="0dp"
             android:background="@android:color/holo_blue_light"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="5dp"
             android:textSize="18sp"
             android:onClick="onClickAbout" />
 
@@ -39,7 +39,7 @@
             style="@style/Widget.AppCompat.Button.Colored"
             android:elevation="0dp"
             android:background="@android:color/holo_blue_light"
-            android:layout_marginTop="15dp"
+            android:layout_marginTop="5dp"
             android:textSize="18sp"
             android:onClick="onGenerateErrorQuit" />
 
@@ -51,7 +51,7 @@
             style="@style/Widget.AppCompat.Button.Colored"
             android:elevation="0dp"
             android:background="@android:color/holo_blue_light"
-            android:layout_marginTop="15dp"
+            android:layout_marginTop="5dp"
             android:textSize="18sp"
             android:onClick="onClickTicTacToe" />
 
@@ -63,9 +63,21 @@
             style="@style/Widget.AppCompat.Button.Colored"
             android:elevation="0dp"
             android:background="@android:color/holo_blue_light"
-            android:layout_marginTop="15dp"
+            android:layout_marginTop="5dp"
             android:textSize="18sp"
             android:onClick="onClickDictionary" />
+
+        <Button
+            android:text="Word Game"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/wordgameButton"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:elevation="0dp"
+            android:background="@android:color/holo_blue_light"
+            android:layout_marginTop="5dp"
+            android:textSize="18sp"
+            android:onClick="onClickWordGame" />
 
         <Button
             android:text="Quit"
@@ -75,7 +87,7 @@
             style="@style/Widget.AppCompat.Button.Colored"
             android:elevation="1dp"
             android:background="@android:color/holo_blue_light"
-            android:layout_marginTop="15dp"
+            android:layout_marginTop="5dp"
             android:textSize="18sp"
             android:onClick="onClickQuit" />
     </LinearLayout>
