@@ -54,18 +54,23 @@ public class WGGameFragment extends Fragment {
     //flag for restoring letter orders
     private boolean restore = false;
 
+    private int scoreRatio = 1;
+
     public static int LONG_PRESS_TIME = 800; // Time in miliseconds
     public static int PRESS_TIME = 400; // Time in miliseconds
 
     private Handler longPressHandler = new Handler();
     private Handler pressHandler = new Handler();
 
+    private String currentString = "";
+    private int[] currentScore = new int[]{-1, -1, -1, -1, -1, -1, -1, -1, -1};
+
     Runnable longPressed = new Runnable() {
         public void run() {
             longPress = true;
             singleTap = false;
             ((WGGameActivity) getActivity()).finishThinking();
-            Log.i("info", "LongPress");
+
         }
     };
     Runnable pressEvent = new Runnable() {
@@ -76,6 +81,7 @@ public class WGGameFragment extends Fragment {
             longPressHandler.postDelayed(longPressed, LONG_PRESS_TIME);
         }
     };
+
     boolean longPress = false;
     boolean singleTap = true;
 
@@ -100,14 +106,27 @@ public class WGGameFragment extends Fragment {
     public void onStart() {
         longPress = false;
         singleTap = true;
+        calculateAndDisplayTotalScore();
         if (restore) {
             restore = false;
             super.onStart();
             return;
         }
+        currentString = "";
         makeLetterBoard();
         updateAllTiles();
         super.onStart();
+    }
+
+    private int calculateAndDisplayTotalScore() {
+        int total = 0;
+        for (int i = 0; i < 9; i++) {
+            if (currentScore[i] >= 0) {
+                total += currentScore[i] * scoreRatio;
+            }
+        }
+        ((WGGameActivity) getActivity()).displayScore(Integer.toString(total));
+        return total;
     }
 
     private void makeLetterBoard() {
@@ -123,26 +142,81 @@ public class WGGameFragment extends Fragment {
         }
     }
 
+    private void setNextAvailableFromLastMove(int fLarge, int fSmall) {
+        if (fLarge != -1 || fSmall != -1) {
+            //making other unvavalable
+            int[] availPos = getAdjacent(fSmall);
+            //set all unval
+            for (int i = 0; i < 9; i++) {
+                mSmallTiles[fLarge][i].setAvailable(false);
+            }
+            //set the avail ones
+            for (int i = 0; i < availPos.length; i++) {
+                mSmallTiles[fLarge][availPos[i]].setAvailable(true);
+            }
+        }
+    }
+
+    private int[] getAdjacent(int pos) {
+        int[] positions;
+        switch(pos) {
+            case 1:
+                positions = new int[] {0, 3, 4, 5, 2};
+                break;
+            case 2:
+                positions = new int[] {1, 4, 5};
+                break;
+            case 3:
+                positions = new int[] {0, 1, 4, 7, 6};
+                break;
+            case 4:
+                positions = new int[] {0, 1, 2, 5, 8, 7, 6, 3};
+                break;
+            case 5:
+                positions = new int[] {2, 1, 4, 7, 8};
+                break;
+            case 6:
+                positions = new int[] {3, 4, 7};
+                break;
+            case 7:
+                positions = new int[] {6, 3, 4, 5, 8};
+                break;
+            case 8:
+                positions = new int[] {7, 4, 5};
+                break;
+            default: positions = new int[] {1, 3, 4};
+        }
+        return positions;
+    }
+
     private int[] setWordOrder() {
         int start = randomGenerator.nextInt(9);
         int[] order;
         switch (start) {
             case 1:
                 order = new int[]{1, 2, 4, 5, 8, 7, 6, 3, 0};
+                break;
             case 2:
                 order = new int[]{2, 4, 6, 7, 8, 5, 1, 0, 3};
+                break;
             case 3:
                 order = new int[]{3, 0, 1, 2, 5, 8, 4, 7, 6};
+                break;
             case 4:
                 order = new int[]{4, 8, 5, 7, 6, 3, 0, 1, 2};
+                break;
             case 5:
                 order = new int[]{5, 8, 7, 6, 4, 2, 1, 3, 0};
+                break;
             case 6:
                 order = new int[]{6, 4, 2, 5, 1, 0, 3, 7, 8};
+                break;
             case 7:
                 order = new int[]{7, 4, 6, 3, 0, 1, 2, 5, 8};
+                break;
             case 8:
                 order = new int[]{8, 5, 2, 1, 0, 4, 6, 7, 3};
+                break;
             default:
                 order = new int[]{0, 1, 2, 4, 3, 6, 7, 5, 8};
         }
@@ -154,7 +228,7 @@ public class WGGameFragment extends Fragment {
     }
 
     private void addAvailable(WGTile tile) {
-        if (!tile.unavailable) {
+        if (tile.getAvailable()) {
             tile.animate();
             mAvailable.add(tile);
         }
@@ -211,7 +285,9 @@ public class WGGameFragment extends Fragment {
                                     // ...
                                     if (isAvailable(smallTile)) {
                                         //.....................................comment out thinking for now
-                                        //((WGGameActivity) getActivity()).startThinking();
+                                        //making other unvavalable
+                                        setNextAvailableFromLastMove(fLarge, fSmall);
+                                        //do the click
                                         mSoundPool.play(mSoundX, mVolume, mVolume, 1, 0, 1f);
                                         makeMove(fLarge, fSmall);
                                         //.................comment think out for part one of this assignment 5
@@ -300,11 +376,13 @@ public class WGGameFragment extends Fragment {
     private void makeMove(int large, int small) {
         mLastLarge = large;
         mLastSmall = small;
+
         WGTile smallTile = mSmallTiles[large][small];
         WGTile largeTile = mLargeTiles[large];
         smallTile.setOwner(mPlayer);
         //put large for better gameplay
         setAvailableFromLastMove(large);
+
         WGTile.Owner oldWinner = largeTile.getOwner();
         WGTile.Owner winner = largeTile.findWinner();
         if (winner != oldWinner) {
@@ -322,9 +400,11 @@ public class WGGameFragment extends Fragment {
     public void restartGame() {
         mSoundPool.play(mSoundRewind, mVolume, mVolume, 1, 0, 1f);
         // ...
+        currentScore = new int[]{-1, -1, -1, -1, -1, -1, -1, -1, -1};
         initGame();
         initViews(getView());
         makeLetterBoard();
+        calculateAndDisplayTotalScore();
         updateAllTiles();
     }
 
@@ -392,6 +472,14 @@ public class WGGameFragment extends Fragment {
         builder.append(',');
         builder.append(mLastSmall);
         builder.append(',');
+        builder.append(currentString);
+        builder.append(',');
+        //appending score for each tile
+        for (int i = 0; i < 9; i++) {
+            builder.append(currentScore[i]);
+            builder.append(",");
+        }
+        //adding letter and value of each tiles
         for (int large = 0; large < 9; large++) {
             for (int small = 0; small < 9; small++) {
                 builder.append(mSmallTiles[large][small].getOwner().name());
@@ -411,6 +499,11 @@ public class WGGameFragment extends Fragment {
         int index = 0;
         mLastLarge = Integer.parseInt(fields[index++]);
         mLastSmall = Integer.parseInt(fields[index++]);
+        currentString = fields[index++];
+        //scores for large tiles
+        for (int i = 0; i < 9; i++) {
+            currentScore[i] = Integer.parseInt(fields[index++]);
+        }
         for (int large = 0; large < 9; large++) {
             for (int small = 0; small < 9; small++) {
                 String[] values = fields[index++].split(":");
@@ -420,8 +513,22 @@ public class WGGameFragment extends Fragment {
                     mSmallTiles[large][small].setLetter(values[1]);
             }
         }
+        setUnavailableTiles(currentScore);
+        setNextAvailableFromLastMove(mLastLarge, mLastSmall);
         setAvailableFromLastMove(mLastLarge);
         updateAllTiles();
+    }
+
+    //tiles with out a score mean it has not yet touched
+    //therefore set the scored tiles as unavailable
+    private void setUnavailableTiles(int[] score) {
+        for (int i = 0; i < 9; i++) {
+            for (int k = 0; k < 9; k++) {
+                if (score[i] >= 0) {
+                    mSmallTiles[i][k].setAvailable(false);
+                }
+            }
+        }
     }
 }
 

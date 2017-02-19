@@ -24,7 +24,7 @@ public class WGTile {
     }
 
     public String letter = "";
-    public Boolean unavailable = false;
+    public Boolean available = true;
 
     // These levels are defined in the drawable definitions
     private static final int LEVEL_X = 0;
@@ -72,8 +72,8 @@ public class WGTile {
         return this.letter;
     }
 
-    public Boolean getUnavailable() {
-        return this.unavailable;
+    public Boolean getAvailable() {
+        return this.available;
     }
 
     public void setOwner(Owner owner) {
@@ -95,8 +95,8 @@ public class WGTile {
         }
     }
 
-    public void setUnavailable(boolean checked) {
-        this.unavailable = checked;
+    public void setAvailable(boolean checked) {
+        this.available = checked;
     }
 
     public void updateDrawableState() {

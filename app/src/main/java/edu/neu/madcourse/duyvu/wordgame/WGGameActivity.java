@@ -19,6 +19,7 @@ import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 
 import edu.neu.madcourse.duyvu.Globals;
 import edu.neu.madcourse.duyvu.R;
@@ -30,6 +31,7 @@ public class WGGameActivity extends AppCompatActivity {
     private Handler mHandler = new Handler();
     private WGGameFragment mGameFragment;
     public Globals dictionary = (Globals) getApplication();
+    private int scoreDisplay = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +48,11 @@ public class WGGameActivity extends AppCompatActivity {
             }
         }
         Log.d("UT3", "restore = " + restore);
+    }
+
+    public void displayScore(String score) {
+        TextView scorePanel = (TextView) findViewById(R.id.wgactivity_game_text);
+        scorePanel.setText("Score: " + score);
     }
 
     public void restartGame() {

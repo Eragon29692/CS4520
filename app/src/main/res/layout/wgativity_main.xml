@@ -23,7 +23,7 @@
    <fragment
       android:id="@+id/wgmain_fragment"
       class="edu.neu.madcourse.duyvu.wordgame.WGMainFragment"
-      android:layout_width="wrap_content"
+      android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:layout_gravity="center"
       tools:layout="@layout/wgfragment_main"/>

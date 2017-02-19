@@ -23,5 +23,6 @@
         android:layout_marginTop="5dp"
         android:background="@drawable/thinking_background_progress"
         android:elevation="@dimen/elevation_high"
+        android:layout_gravity="right"
         android:indeterminate="true" />
 </FrameLayout>
