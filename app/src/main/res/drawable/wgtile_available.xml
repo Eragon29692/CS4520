@@ -12,6 +12,6 @@
    <stroke
       android:width="@dimen/stroke_width"
       android:color="@color/dark_border_color"/>
-   <solid android:color="@android:color/holo_green_light"/>
+   <solid android:color="@color/available_color"/>
    <corners android:radius="@dimen/corner_radius"/>
 </shape>

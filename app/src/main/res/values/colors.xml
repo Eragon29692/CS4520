@@ -13,4 +13,5 @@
     <color name="red_color">#ff7f7f</color>
     <color name="thinking_background_color">#cfdfdfdf</color>
     <color name="wgcolor_tile">#f3797e94</color>
+    <color name="finish_thinking_color">#f490d1ca</color>
 </resources>

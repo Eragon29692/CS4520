@@ -30,13 +30,14 @@ public class WGGameActivity extends AppCompatActivity {
     private MediaPlayer mMediaPlayer;
     private Handler mHandler = new Handler();
     private WGGameFragment mGameFragment;
-    public Globals dictionary = (Globals) getApplication();
     private int scoreDisplay = 0;
+    public Globals dictionary;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.wgactivity_game);
+        dictionary = (Globals)getApplication();
         mGameFragment = (WGGameFragment) getFragmentManager()
                 .findFragmentById(R.id.wgfragment_game);
         boolean restore = getIntent().getBooleanExtra(KEY_RESTORE, false);

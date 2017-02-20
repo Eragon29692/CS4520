@@ -20,7 +20,7 @@
         android:id="@+id/wgthinkingProgressBar"
         android:layout_height="@dimen/thinking_progress_size"
         android:layout_marginLeft="5dp"
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="0dp"
         android:background="@drawable/thinking_background_progress"
         android:elevation="@dimen/elevation_high"
         android:layout_gravity="right"

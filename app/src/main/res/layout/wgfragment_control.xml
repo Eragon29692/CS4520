@@ -29,7 +29,8 @@
         android:textStyle="normal|bold"
         android:layout_weight="0.72"
         android:paddingRight="10dp"
-        android:paddingLeft="10dp" />
+        android:paddingLeft="10dp"
+        android:layout_marginLeft="10dp" />
 
     <Button
         android:id="@+id/wgbutton_restart"

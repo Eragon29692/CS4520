@@ -30,6 +30,7 @@ import edu.neu.madcourse.duyvu.Globals;
 import edu.neu.madcourse.duyvu.R;
 
 public class WGGameFragment extends Fragment {
+    private int maxInt = Integer.MAX_VALUE;
     static private int mLargeIds[] = {R.id.wglarge1, R.id.wglarge2, R.id.wglarge3,
             R.id.wglarge4, R.id.wglarge5, R.id.wglarge6, R.id.wglarge7, R.id.wglarge8,
             R.id.wglarge9,};
@@ -63,20 +64,18 @@ public class WGGameFragment extends Fragment {
     private Handler pressHandler = new Handler();
 
     private String currentString = "";
-    private int[] currentScore = new int[]{-1, -1, -1, -1, -1, -1, -1, -1, -1};
+    private int[] currentScore = new int[]{maxInt, maxInt, maxInt, maxInt, maxInt, maxInt, maxInt, maxInt, maxInt};
+    private int[] finishedBoard = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0};
 
     Runnable longPressed = new Runnable() {
         public void run() {
-            longPress = true;
-            singleTap = false;
+            onLongPressed();
             ((WGGameActivity) getActivity()).finishThinking();
-
         }
     };
     Runnable pressEvent = new Runnable() {
         public void run() {
-            longPress = false;
-            singleTap = false;
+            onPressed();
             ((WGGameActivity) getActivity()).startThinking();
             longPressHandler.postDelayed(longPressed, LONG_PRESS_TIME);
         }
@@ -121,12 +120,55 @@ public class WGGameFragment extends Fragment {
     private int calculateAndDisplayTotalScore() {
         int total = 0;
         for (int i = 0; i < 9; i++) {
-            if (currentScore[i] >= 0) {
+            if (currentScore[i] != maxInt) {
                 total += currentScore[i] * scoreRatio;
             }
         }
         ((WGGameActivity) getActivity()).displayScore(Integer.toString(total));
         return total;
+    }
+
+    private void addScore(int add) {
+        if (currentScore[mLastLarge] == maxInt) {
+            currentScore[mLastLarge] = add;
+        } else {
+            currentScore[mLastLarge] += add;
+        }
+    }
+
+    private void onLongPressed() {
+        longPress = true;
+        singleTap = false;
+        Boolean checkWord = ((WGGameActivity)getActivity()).dictionary.checkDictionary(currentString);
+        if (checkWord) {
+            finishedBoard[mLastLarge] = 1;
+            addScore(currentString.length() * scoreRatio);
+            for (int i = 0; i < 9; i++) {
+                mSmallTiles[mLastLarge][i].setAvailable(false);
+            }
+        } else {
+            addScore(-currentString.length() * scoreRatio);
+            for (int i = 0; i < 9; i++) {
+                mSmallTiles[mLastLarge][i].setAvailable(true);
+                mSmallTiles[mLastLarge][i].setOwner(WGTile.Owner.NEITHER);
+            }
+        }
+        updateOnLongPress();
+    }
+
+    private void updateOnLongPress() {
+        mLastLarge = -1;
+        mLastSmall = -1;
+        currentString = "";
+        mAvailable.clear();
+        calculateAndDisplayTotalScore();
+        setAllAvailable();
+        updateAllTiles();
+    }
+
+    private void onPressed() {
+        longPress = false;
+        singleTap = false;
     }
 
     private void makeLetterBoard() {
@@ -142,7 +184,8 @@ public class WGGameFragment extends Fragment {
         }
     }
 
-    private void setNextAvailableFromLastMove(int fLarge, int fSmall) {
+    private int setNextAvailableFromLastMove(int fLarge, int fSmall) {
+        int availableInSmall = 0;
         if (fLarge != -1 || fSmall != -1) {
             //making other unvavalable
             int[] availPos = getAdjacent(fSmall);
@@ -152,9 +195,13 @@ public class WGGameFragment extends Fragment {
             }
             //set the avail ones
             for (int i = 0; i < availPos.length; i++) {
-                mSmallTiles[fLarge][availPos[i]].setAvailable(true);
+                if (mSmallTiles[fLarge][availPos[i]].getOwner() == WGTile.Owner.NEITHER) {
+                    mSmallTiles[fLarge][availPos[i]].setAvailable(true);
+                    availableInSmall++;
+                }
             }
         }
+        return availableInSmall;
     }
 
     private int[] getAdjacent(int pos) {
@@ -267,7 +314,9 @@ public class WGGameFragment extends Fragment {
                     public boolean onTouch(View view, MotionEvent event) {
                         switch(event.getAction()){
                             case MotionEvent.ACTION_DOWN:
-                                pressHandler.postDelayed(pressEvent, PRESS_TIME);
+                                if (mLastLarge != -1 && mLastLarge == fLarge && mSmallTiles[fLarge][fSmall].getOwner() != WGTile.Owner.NEITHER) {
+                                    pressHandler.postDelayed(pressEvent, PRESS_TIME);
+                                }
                                 break;
                             case MotionEvent.ACTION_MOVE:
                                 pressHandler.removeCallbacks(pressEvent);
@@ -281,15 +330,17 @@ public class WGGameFragment extends Fragment {
 
                                 if(!longPress && singleTap) {
                                     //..........................................comment out animation for now
-                                    //smallTile.animate();
+                                    smallTile.animate();
                                     // ...
-                                    if (isAvailable(smallTile)) {
+                                    if (isAvailable(smallTile) && mSmallTiles[fLarge][fSmall].getAvailable()) {
                                         //.....................................comment out thinking for now
                                         //making other unvavalable
-                                        setNextAvailableFromLastMove(fLarge, fSmall);
+                                        currentString += smallTile.getLetter();
+                                        int nomove = setNextAvailableFromLastMove(fLarge, fSmall);
                                         //do the click
                                         mSoundPool.play(mSoundX, mVolume, mVolume, 1, 0, 1f);
                                         makeMove(fLarge, fSmall);
+
                                         //.................comment think out for part one of this assignment 5
                                         //think();
                                     }
@@ -303,14 +354,6 @@ public class WGGameFragment extends Fragment {
                 });
 
                 // ...
-            }
-        }
-    }
-
-    private void setTileLetter() {
-        for (int i = 0; i < 9; i++) {
-            for (int k = 0; k < 9; k++) {
-                boardGame[i][k] = "A";
             }
         }
     }
@@ -382,25 +425,29 @@ public class WGGameFragment extends Fragment {
         smallTile.setOwner(mPlayer);
         //put large for better gameplay
         setAvailableFromLastMove(large);
-
+/*
         WGTile.Owner oldWinner = largeTile.getOwner();
         WGTile.Owner winner = largeTile.findWinner();
         if (winner != oldWinner) {
             largeTile.animate();
             largeTile.setOwner(winner);
         }
-        winner = mEntireBoard.findWinner();
+        //winner = mEntireBoard.findWinner();
         mEntireBoard.setOwner(winner);
-        updateAllTiles();
         if (winner != WGTile.Owner.NEITHER) {
             ((WGGameActivity) getActivity()).reportWinner(winner);
         }
+*/
+        updateAllTiles();
+
     }
 
     public void restartGame() {
         mSoundPool.play(mSoundRewind, mVolume, mVolume, 1, 0, 1f);
         // ...
-        currentScore = new int[]{-1, -1, -1, -1, -1, -1, -1, -1, -1};
+        currentScore = new int[]{maxInt, maxInt, maxInt, maxInt, maxInt, maxInt, maxInt, maxInt, maxInt};
+        finishedBoard = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0};
+        currentString = "";
         initGame();
         initViews(getView());
         makeLetterBoard();
@@ -431,6 +478,7 @@ public class WGGameFragment extends Fragment {
         clearAvailable();
         // Make all the tiles at the destination available
         if (small != -1) {
+            mAvailable.clear();
             for (int dest = 0; dest < 9; dest++) {
                 WGTile tile = mSmallTiles[small][dest];
                 if (tile.getOwner() == WGTile.Owner.NEITHER)
@@ -438,7 +486,8 @@ public class WGGameFragment extends Fragment {
             }
         }
         // If there were none available, make all squares available
-        if (mAvailable.isEmpty()) {
+        if (mAvailable.isEmpty() && small == -1 || mAvailable.isEmpty() && currentScore[small] != maxInt && finishedBoard[small] == 1) {
+            mAvailable.clear();
             setAllAvailable();
         }
     }
@@ -479,6 +528,11 @@ public class WGGameFragment extends Fragment {
             builder.append(currentScore[i]);
             builder.append(",");
         }
+        //make sure board is pressed or not
+        for (int i = 0; i < 9; i++) {
+            builder.append(finishedBoard[i]);
+            builder.append(",");
+        }
         //adding letter and value of each tiles
         for (int large = 0; large < 9; large++) {
             for (int small = 0; small < 9; small++) {
@@ -504,6 +558,10 @@ public class WGGameFragment extends Fragment {
         for (int i = 0; i < 9; i++) {
             currentScore[i] = Integer.parseInt(fields[index++]);
         }
+        //check for finished board
+        for (int i = 0; i < 9; i++) {
+            finishedBoard[i] = Integer.parseInt(fields[index++]);
+        }
         for (int large = 0; large < 9; large++) {
             for (int small = 0; small < 9; small++) {
                 String[] values = fields[index++].split(":");
@@ -513,7 +571,7 @@ public class WGGameFragment extends Fragment {
                     mSmallTiles[large][small].setLetter(values[1]);
             }
         }
-        setUnavailableTiles(currentScore);
+        setUnavailableTiles(finishedBoard);
         setNextAvailableFromLastMove(mLastLarge, mLastSmall);
         setAvailableFromLastMove(mLastLarge);
         updateAllTiles();
@@ -524,7 +582,7 @@ public class WGGameFragment extends Fragment {
     private void setUnavailableTiles(int[] score) {
         for (int i = 0; i < 9; i++) {
             for (int k = 0; k < 9; k++) {
-                if (score[i] >= 0) {
+                if (score[i] == 1) {
                     mSmallTiles[i][k].setAvailable(false);
                 }
             }
