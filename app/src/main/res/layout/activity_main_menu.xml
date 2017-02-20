@@ -29,7 +29,9 @@
             android:background="@android:color/holo_blue_light"
             android:layout_marginTop="5dp"
             android:onClick="onClickAbout"
-            android:textSize="18sp" />
+            android:textSize="18sp"
+            android:fontFamily="monospace"
+            android:textStyle="normal|bold" />
 
         <Button
             android:text="Generate Error"
@@ -41,7 +43,9 @@
             android:background="@android:color/holo_blue_light"
             android:layout_marginTop="5dp"
             android:textSize="18sp"
-            android:onClick="onGenerateErrorQuit" />
+            android:onClick="onGenerateErrorQuit"
+            android:fontFamily="monospace"
+            android:textStyle="normal|bold" />
 
         <Button
             android:text="Tic Tac Toe"
@@ -53,7 +57,9 @@
             android:background="@android:color/holo_blue_light"
             android:layout_marginTop="5dp"
             android:textSize="18sp"
-            android:onClick="onClickTicTacToe" />
+            android:onClick="onClickTicTacToe"
+            android:fontFamily="monospace"
+            android:textStyle="normal|bold" />
 
         <Button
             android:text="Dictionary"
@@ -65,7 +71,9 @@
             android:background="@android:color/holo_blue_light"
             android:layout_marginTop="5dp"
             android:textSize="18sp"
-            android:onClick="onClickDictionary" />
+            android:onClick="onClickDictionary"
+            android:fontFamily="monospace"
+            android:textStyle="normal|bold" />
 
         <Button
             android:text="Word Game"
@@ -77,7 +85,9 @@
             android:background="@android:color/holo_blue_light"
             android:layout_marginTop="5dp"
             android:textSize="18sp"
-            android:onClick="onClickWordGame" />
+            android:onClick="onClickWordGame"
+            android:textStyle="normal|bold"
+            android:fontFamily="monospace" />
 
         <Button
             android:text="Quit"
@@ -89,7 +99,9 @@
             android:background="@android:color/holo_blue_light"
             android:layout_marginTop="5dp"
             android:textSize="18sp"
-            android:onClick="onClickQuit" />
+            android:onClick="onClickQuit"
+            android:fontFamily="monospace"
+            android:textStyle="normal|bold" />
     </LinearLayout>
 
 </RelativeLayout>

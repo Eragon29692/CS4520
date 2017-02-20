@@ -35,7 +35,9 @@
         android:padding="@dimen/menu_button_padding"
         android:text="@string/continue_label"
         android:fontFamily="casual"
-        android:textStyle="normal|bold" />
+        android:textAllCaps="true"
+        android:textStyle="normal|bold"
+        android:gravity="center" />
 
     <Button
         android:id="@+id/wgnew_button"
@@ -47,7 +49,23 @@
         android:padding="@dimen/menu_button_padding"
         android:text="@string/new_game_label"
         android:fontFamily="casual"
-        android:textStyle="normal|bold" />
+        android:textStyle="normal|bold"
+        android:textAllCaps="true"
+        android:gravity="center" />
+
+    <Button
+        android:id="@+id/wgsound_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="@dimen/menu_button_margin"
+        android:background="@android:color/holo_blue_light"
+        android:padding="@dimen/menu_button_padding"
+        android:text="Sound: "
+        android:fontFamily="casual"
+        android:textStyle="normal|bold"
+        android:textAllCaps="true"
+        android:gravity="center" />
 
     <Button
         android:id="@+id/wgabout_button"
@@ -57,8 +75,39 @@
         android:layout_margin="@dimen/menu_button_margin"
         android:background="@android:color/holo_blue_light"
         android:padding="@dimen/menu_button_padding"
-        android:text="@string/about_label"
+        android:text="INSTRUCTIONS"
         android:textSize="14sp"
         android:fontFamily="casual"
-        android:textStyle="normal|bold" />
+        android:textStyle="normal|bold"
+        android:textAllCaps="true"
+        android:gravity="center" />
+
+    <Button
+        android:id="@+id/wgacknowledge_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="@dimen/menu_button_margin"
+        android:background="@android:color/holo_blue_light"
+        android:padding="@dimen/menu_button_padding"
+        android:text="ACKNOWLEDGE"
+        android:fontFamily="casual"
+        android:textStyle="normal|bold"
+        android:textAllCaps="true"
+        android:gravity="center" />
+
+    <Button
+        android:id="@+id/wgquit_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="@dimen/menu_button_margin"
+        android:background="@android:color/holo_blue_light"
+        android:padding="@dimen/menu_button_padding"
+        android:text="QUIT"
+        android:fontFamily="casual"
+        android:textStyle="normal|bold"
+        android:textAllCaps="true"
+        android:gravity="center" />
+
 </LinearLayout>

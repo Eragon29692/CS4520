@@ -33,6 +33,7 @@ import edu.neu.madcourse.duyvu.R;
 
 import static edu.neu.madcourse.duyvu.wordgame.WGGameActivity.KEY_RESTORE;
 import static edu.neu.madcourse.duyvu.wordgame.WGGameActivity.PREF_RESTORE;
+import static edu.neu.madcourse.duyvu.wordgame.WGMainActivity.NORMAL_VOLUME;
 
 public class WGGameFragment extends Fragment {
     private int maxInt = Integer.MAX_VALUE;
@@ -51,7 +52,7 @@ public class WGGameFragment extends Fragment {
     private Set<WGTile> mAvailable = new HashSet<WGTile>();
     private int mSoundX, mSoundO, mSoundMiss, mSoundRewind;
     private SoundPool mSoundPool;
-    private float mVolume = 1f;
+    private float mVolume = NORMAL_VOLUME;
     private int mLastLarge;
     private int mLastSmall;
     Globals dictionary;
@@ -116,6 +117,10 @@ public class WGGameFragment extends Fragment {
         longPress = false;
         singleTap = true;
         calculateAndDisplayTotalScore();
+        mVolume = ((WGGameActivity)getActivity()).getVolume();
+        mSoundPool.setVolume(mSoundO, mVolume, mVolume);
+        mSoundPool.setVolume(mSoundX, mVolume, mVolume);
+        mSoundPool.setVolume(mSoundRewind, mVolume, mVolume);
         if (restore) {
             restore = false;
             super.onStart();

@@ -26,8 +26,11 @@ import android.widget.TextView;
 import edu.neu.madcourse.duyvu.Globals;
 import edu.neu.madcourse.duyvu.R;
 
+import static edu.neu.madcourse.duyvu.wordgame.WGMainActivity.NORMAL_VOLUME;
+
 public class WGGameActivity extends AppCompatActivity {
     public static final String KEY_RESTORE = "key_restore";
+    public static final String SOUND_VOLUME = "sound_volume";
     public static final String PREF_RESTORE = "pref_restore";
     private MediaPlayer mMediaPlayer;
     private Handler mHandler = new Handler();
@@ -35,6 +38,7 @@ public class WGGameActivity extends AppCompatActivity {
     private int scoreDisplay = 0;
     public Globals dictionary;
     SharedPreferences sharedPreferences;
+    private float soundVolume = NORMAL_VOLUME;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,14 +49,19 @@ public class WGGameActivity extends AppCompatActivity {
                 .findFragmentById(R.id.wgfragment_game);
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         boolean restore = getIntent().getBooleanExtra(KEY_RESTORE, false);
+        soundVolume = getIntent().getFloatExtra(SOUND_VOLUME, NORMAL_VOLUME);
+        Log.d("ssssss6666666666666", Float.toString(soundVolume));
         if (restore) {
             String gameData = sharedPreferences.getString(WGGameActivity.PREF_RESTORE, null);
             if (gameData != null && !gameData.equals("") && restore) {
                 mGameFragment.putState(gameData);
             }
         }
-
         Log.d("UT3", "restore = " + restore);
+    }
+
+    protected float getVolume() {
+        return soundVolume;
     }
 
     public void displayScore(String score) {
@@ -89,6 +98,7 @@ public class WGGameActivity extends AppCompatActivity {
                                 : winner == WGTile.Owner.O ? R.raw.notr_loser
                                 : R.raw.department64_draw
                 );
+                mMediaPlayer.setVolume(soundVolume, soundVolume);
                 mMediaPlayer.start();
                 dialog.show();
             }
@@ -124,6 +134,7 @@ public class WGGameActivity extends AppCompatActivity {
         super.onResume();
         mMediaPlayer = MediaPlayer.create(this, R.raw.frankum_loop001e);
         mMediaPlayer.setLooping(true);
+        mMediaPlayer.setVolume(soundVolume, soundVolume);
         mMediaPlayer.start();
     }
 

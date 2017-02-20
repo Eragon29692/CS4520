@@ -26,6 +26,8 @@ import edu.neu.madcourse.duyvu.R;
 import static android.content.Context.MODE_PRIVATE;
 import static edu.neu.madcourse.duyvu.wordgame.WGGameActivity.KEY_RESTORE;
 import static edu.neu.madcourse.duyvu.wordgame.WGGameActivity.PREF_RESTORE;
+import static edu.neu.madcourse.duyvu.wordgame.WGGameActivity.SOUND_VOLUME;
+import static edu.neu.madcourse.duyvu.wordgame.WGMainActivity.NORMAL_VOLUME;
 
 public class WGMainFragment extends Fragment {
 
@@ -40,18 +42,41 @@ public class WGMainFragment extends Fragment {
         View newButton = rootView.findViewById(R.id.wgnew_button);
         View continueButton = rootView.findViewById(R.id.wgcontinue_button);
         View aboutButton = rootView.findViewById(R.id.wgabout_button);
+        final Button soundButton = (Button)rootView.findViewById(R.id.wgsound_button);
+        View acknowledgeButton = rootView.findViewById(R.id.wgacknowledge_button);
+        View quitButton = rootView.findViewById(R.id.wgquit_button);
+
+        if (((WGMainActivity) getActivity()).getVolume() != 0) {
+            soundButton.setText("SOUND: ON");
+        } else {
+            soundButton.setText("SOUND: OFF");
+        }
+
         final SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
         String gameData = sharedPreferences.getString(PREF_RESTORE, null);
-        Boolean restore = sharedPreferences.getBoolean(KEY_RESTORE, false);
 
-        if (!restore) {
-            continueButton.setVisibility(View.GONE);
-        }
         newButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(getActivity(), WGGameActivity.class);
+                intent.putExtra(SOUND_VOLUME, ((WGMainActivity) getActivity()).getVolume());
                 getActivity().startActivity(intent);
+            }
+        });
+        acknowledgeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setMessage("\"1) I have not use any additional images/icons/graphics for this assignment\\\\n\\\\n3)  No outside code\\\\n\\\\n4)  No additional help from the slides and piazza\"");
+                builder.setCancelable(false);
+                builder.setPositiveButton(R.string.ok_label,
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                // nothing
+                            }
+                        });
+                mDialog = builder.show();
             }
         });
         continueButton.setOnClickListener(new View.OnClickListener() {
@@ -59,7 +84,21 @@ public class WGMainFragment extends Fragment {
             public void onClick(View view) {
                 Intent intent = new Intent(getActivity(), WGGameActivity.class);
                 intent.putExtra(KEY_RESTORE, true);
+                intent.putExtra(SOUND_VOLUME, ((WGMainActivity) getActivity()).getVolume());
                 getActivity().startActivity(intent);
+            }
+        });
+        soundButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                float volume = ((WGMainActivity) getActivity()).getVolume();
+                if (volume != 0) {
+                    soundButton.setText("SOUND: OFF");
+                    ((WGMainActivity) getActivity()).setVolume(0);
+                } else {
+                    soundButton.setText("SOUND: ON");
+                    ((WGMainActivity) getActivity()).setVolume(NORMAL_VOLUME);
+                }
             }
         });
         aboutButton.setOnClickListener(new View.OnClickListener() {
@@ -76,6 +115,12 @@ public class WGMainFragment extends Fragment {
                             }
                         });
                 mDialog = builder.show();
+            }
+        });
+        quitButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getActivity().finish();
             }
         });
         return rootView;
