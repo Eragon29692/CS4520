@@ -10,10 +10,12 @@ package edu.neu.madcourse.duyvu.wordgame;
 
 import android.app.Fragment;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -29,8 +31,12 @@ import java.util.Set;
 import edu.neu.madcourse.duyvu.Globals;
 import edu.neu.madcourse.duyvu.R;
 
+import static edu.neu.madcourse.duyvu.wordgame.WGGameActivity.KEY_RESTORE;
+import static edu.neu.madcourse.duyvu.wordgame.WGGameActivity.PREF_RESTORE;
+
 public class WGGameFragment extends Fragment {
     private int maxInt = Integer.MAX_VALUE;
+    SharedPreferences sharedPreferences;
     static private int mLargeIds[] = {R.id.wglarge1, R.id.wglarge2, R.id.wglarge3,
             R.id.wglarge4, R.id.wglarge5, R.id.wglarge6, R.id.wglarge7, R.id.wglarge8,
             R.id.wglarge9,};
@@ -63,9 +69,12 @@ public class WGGameFragment extends Fragment {
     private Handler longPressHandler = new Handler();
     private Handler pressHandler = new Handler();
 
+    private Handler timerHandler = new Handler();
+
     private String currentString = "";
     private int[] currentScore = new int[]{maxInt, maxInt, maxInt, maxInt, maxInt, maxInt, maxInt, maxInt, maxInt};
     private int[] finishedBoard = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0};
+    private boolean touched = false;
 
     Runnable longPressed = new Runnable() {
         public void run() {
@@ -87,6 +96,7 @@ public class WGGameFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
         // Retain this fragment across configuration changes.
         setRetainInstance(true);
         initGame();
@@ -145,6 +155,7 @@ public class WGGameFragment extends Fragment {
             addScore(currentString.length() * scoreRatio);
             for (int i = 0; i < 9; i++) {
                 mSmallTiles[mLastLarge][i].setAvailable(false);
+                mLargeTiles[mLastLarge].setOwner(mPlayer);
             }
         } else {
             addScore(-currentString.length() * scoreRatio);
@@ -172,6 +183,7 @@ public class WGGameFragment extends Fragment {
     }
 
     private void makeLetterBoard() {
+        touched = false;
         int[] order;
         String word;
         for (int m = 0; m < 9; m++) {
@@ -417,6 +429,12 @@ public class WGGameFragment extends Fragment {
     }
 
     private void makeMove(int large, int small) {
+        if (!touched) {
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putBoolean(KEY_RESTORE, true).commit();
+            touched = true;
+        }
+
         mLastLarge = large;
         mLastSmall = small;
 
@@ -445,6 +463,9 @@ public class WGGameFragment extends Fragment {
     public void restartGame() {
         mSoundPool.play(mSoundRewind, mVolume, mVolume, 1, 0, 1f);
         // ...
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(PREF_RESTORE, "").commit();
+        editor.putBoolean(KEY_RESTORE, false).commit();
         currentScore = new int[]{maxInt, maxInt, maxInt, maxInt, maxInt, maxInt, maxInt, maxInt, maxInt};
         finishedBoard = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0};
         currentString = "";
@@ -581,8 +602,10 @@ public class WGGameFragment extends Fragment {
     //therefore set the scored tiles as unavailable
     private void setUnavailableTiles(int[] score) {
         for (int i = 0; i < 9; i++) {
-            for (int k = 0; k < 9; k++) {
-                if (score[i] == 1) {
+            if (score[i] == 1) {
+                //set X as ower for finished tiles
+                mLargeTiles[i].setOwner(WGTile.Owner.X);
+                for (int k = 0; k < 9; k++) {
                     mSmallTiles[i][k].setAvailable(false);
                 }
             }

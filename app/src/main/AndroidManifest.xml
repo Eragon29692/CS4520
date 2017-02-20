@@ -33,7 +33,8 @@
         <activity
             android:name=".wordgame.WGGameActivity"
             android:label="Scroggle"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.NoActionBar"/>
         <activity
             android:name=".wordgame.WGMainActivity"
             android:label="Scroggle"

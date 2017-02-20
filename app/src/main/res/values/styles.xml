@@ -27,4 +27,6 @@
         <item name="android:scaleType">centerCrop</item>
         <item name="android:src">@drawable/tile</item>
     </style>
+
+
 </resources>

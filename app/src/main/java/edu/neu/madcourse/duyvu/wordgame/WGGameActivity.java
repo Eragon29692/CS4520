@@ -12,10 +12,12 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -32,6 +34,7 @@ public class WGGameActivity extends AppCompatActivity {
     private WGGameFragment mGameFragment;
     private int scoreDisplay = 0;
     public Globals dictionary;
+    SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,14 +43,15 @@ public class WGGameActivity extends AppCompatActivity {
         dictionary = (Globals)getApplication();
         mGameFragment = (WGGameFragment) getFragmentManager()
                 .findFragmentById(R.id.wgfragment_game);
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         boolean restore = getIntent().getBooleanExtra(KEY_RESTORE, false);
         if (restore) {
-            String gameData = getPreferences(MODE_PRIVATE)
-                    .getString(PREF_RESTORE, null);
-            if (gameData != null) {
+            String gameData = sharedPreferences.getString(WGGameActivity.PREF_RESTORE, null);
+            if (gameData != null && !gameData.equals("") && restore) {
                 mGameFragment.putState(gameData);
             }
         }
+
         Log.d("UT3", "restore = " + restore);
     }
 
@@ -131,9 +135,8 @@ public class WGGameActivity extends AppCompatActivity {
         mMediaPlayer.reset();
         mMediaPlayer.release();
         String gameData = mGameFragment.getState();
-        getPreferences(MODE_PRIVATE).edit()
-                .putString(PREF_RESTORE, gameData)
-                .commit();
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(PREF_RESTORE, gameData).commit();
         Log.d("UT3", "state = " + gameData);
     }
 }
