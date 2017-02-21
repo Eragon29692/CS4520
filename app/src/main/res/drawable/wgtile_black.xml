@@ -7,17 +7,8 @@
  ! We make no guarantees that this code is fit for any purpose. 
  ! Visit http://www.pragmaticprogrammer.com/titles/eband4 for more book information.
 -->
-<level-list xmlns:android="http://schemas.android.com/apk/res/android">
-   <item
-      android:drawable="@drawable/tile_playe_x"
-      android:maxLevel="0"/>
-   <item
-      android:drawable="@drawable/tile_playe_y"
-      android:maxLevel="1"/>
-   <item
-      android:drawable="@drawable/wgtile_black"
-      android:maxLevel="2"/>
-   <item
-      android:drawable="@drawable/tile_purple"
-      android:maxLevel="3"/>
-</level-list>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+       android:shape="rectangle">
+   <solid android:color="@android:color/black"/>
+   <corners android:radius="@dimen/corner_radius"/>
+</shape>

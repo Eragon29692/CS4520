@@ -67,7 +67,7 @@ public class WGGameFragment extends Fragment {
 
     private int scoreRatio = 1;
 
-    public static int LONG_PRESS_TIME = 800; // Time in miliseconds
+    public static int LONG_PRESS_TIME = 600; // Time in miliseconds
     public static int PRESS_TIME = 400; // Time in miliseconds
 
     private Handler longPressHandler = new Handler();
@@ -97,17 +97,30 @@ public class WGGameFragment extends Fragment {
 
     private Handler timeHandler = new Handler();
     private int currentTime = 0;
-    private int phase1 = 100;
+    private int phase1 = 180;
     private int phase2 = 60;
 
     Runnable timerPhase = new Runnable() {
         public void run() {
-            ((WGGameActivity)getActivity()).displayTime(phase1);
+            if (phase1 != -1) {
+                ((WGGameActivity) getActivity()).displayTime(phase1);
+            } else {
+                ((WGGameActivity) getActivity()).displayTime(phase2);
+            }
             if (phase1 > 0) {
                 phase1--;
                 timeHandler.postDelayed(this, 1000);
             }
-            if(phase1 == 0 || checkFinishedGame()) {
+            if (phase1 == -1 && phase2 > 0) {
+                phase2--;
+                timeHandler.postDelayed(this, 1000);
+            }
+            if (phase1 == 0 || checkFinishedPhase1()) {
+                phase1 = -1;
+                flipBoardForPhase2();
+                timeHandler.postDelayed(this, 1000);
+            }
+            if (phase1 == -1 && phase2 == 0) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                 builder.setMessage("TIME'S UP. YOUR SCORE IS " + calculateAndDisplayTotalScore());
                 builder.setCancelable(false);
@@ -116,6 +129,7 @@ public class WGGameFragment extends Fragment {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 restartNoTimerAndSound();
+                                mDialog.dismiss();
                                 getActivity().finish();
                             }
                         });
@@ -124,16 +138,16 @@ public class WGGameFragment extends Fragment {
         }
     };
 
-    private boolean checkFinishedGame() {
+    private boolean checkFinishedPhase1() {
         boolean finished = true;
         for (int i = 0; i < 9; i++) {
             if (finishedBoard[i] == 0) {
                 finished = false;
             }
         }
-        if (finished) {
-            timeHandler.removeCallbacks(timerPhase);
-        }
+        //if (finished) {
+         //   timeHandler.removeCallbacks(timerPhase);
+        //}
         return finished;
     }
 
@@ -160,7 +174,7 @@ public class WGGameFragment extends Fragment {
         longPress = false;
         singleTap = true;
         calculateAndDisplayTotalScore();
-        mVolume = ((WGGameActivity)getActivity()).getVolume();
+        mVolume = ((WGGameActivity) getActivity()).getVolume();
         mSoundPool.setVolume(mSoundO, mVolume, mVolume);
         mSoundPool.setVolume(mSoundX, mVolume, mVolume);
         mSoundPool.setVolume(mSoundRewind, mVolume, mVolume);
@@ -195,24 +209,60 @@ public class WGGameFragment extends Fragment {
         }
     }
 
+    private void flipBoardForPhase2() {
+        for (int i = 0; i < 9; i++) {
+            mLargeTiles[i].setOwner(WGTile.Owner.NEITHER);
+            if (mLargeTiles[i].getOwner() == WGTile.Owner.NEITHER || finishedBoard[i] == 0) {
+                mLargeTiles[i].setOwner(WGTile.Owner.UNAVAIL);
+            } else {
+                mLargeTiles[i].setOwner(WGTile.Owner.NEITHER);
+            }
+            for (int k = 0; k < 9; k++) {
+                if (mSmallTiles[i][k].getOwner() == WGTile.Owner.NEITHER || finishedBoard[i] == 0) {
+                    mSmallTiles[i][k].setOwner(WGTile.Owner.UNAVAIL);
+                } else {
+                    mSmallTiles[i][k].setOwner(WGTile.Owner.NEITHER);
+                }
+                mSmallTiles[i][k].setAvailable(true);
+            }
+        }
+        timeHandler.removeCallbacks(timerPhase);
+        //mLastLarge = -1;
+        //mLastSmall = -1;
+        currentString = "";
+        mAvailable.clear();
+        calculateAndDisplayTotalScore();
+        setAllAvailable();
+        updateAllTiles();
+    }
+
     private void onLongPressed() {
         longPress = true;
         singleTap = false;
-        Boolean checkWord = ((WGGameActivity)getActivity()).dictionary.checkDictionary(currentString);
+        Boolean checkWord = ((WGGameActivity) getActivity()).dictionary.checkDictionary(currentString);
         if (checkWord) {
-            finishedBoard[mLastLarge] = 1;
+            if (phase1 != -1) {
+                finishedBoard[mLastLarge] = 1;
+                ((WGGameActivity) getActivity()).displayWord(currentString);
+                for (int i = 0; i < 9; i++) {
+                    mSmallTiles[mLastLarge][i].setAvailable(false);
+                    mLargeTiles[mLastLarge].setOwner(mPlayer);
+                }
+            } else {
+                ((WGGameActivity) getActivity()).displayWord(currentString);
+                for (int i = 0; i < 9; i++) {
+                    mSmallTiles[mLastLarge][i].setAvailable(true);
+                }
+            }
             addScore(currentString.length() * scoreRatio);
-            ((WGGameActivity)getActivity()).displayWord(currentString);
-            for (int i = 0; i < 9; i++) {
-                mSmallTiles[mLastLarge][i].setAvailable(false);
-                mLargeTiles[mLastLarge].setOwner(mPlayer);
-            }
         } else {
-            addScore(-currentString.length() * scoreRatio);
-            for (int i = 0; i < 9; i++) {
-                mSmallTiles[mLastLarge][i].setAvailable(true);
-                mSmallTiles[mLastLarge][i].setOwner(WGTile.Owner.NEITHER);
+            if (phase1 != -1) {
+                for (int i = 0; i < 9; i++) {
+                    mSmallTiles[mLastLarge][i].setAvailable(true);
+                    mSmallTiles[mLastLarge][i].setOwner(WGTile.Owner.NEITHER);
+                }
             }
+            addScore(-currentString.length() * scoreRatio);
         }
         updateOnLongPress();
     }
@@ -268,32 +318,33 @@ public class WGGameFragment extends Fragment {
 
     private int[] getAdjacent(int pos) {
         int[] positions;
-        switch(pos) {
+        switch (pos) {
             case 1:
-                positions = new int[] {0, 3, 4, 5, 2};
+                positions = new int[]{0, 3, 4, 5, 2};
                 break;
             case 2:
-                positions = new int[] {1, 4, 5};
+                positions = new int[]{1, 4, 5};
                 break;
             case 3:
-                positions = new int[] {0, 1, 4, 7, 6};
+                positions = new int[]{0, 1, 4, 7, 6};
                 break;
             case 4:
-                positions = new int[] {0, 1, 2, 5, 8, 7, 6, 3};
+                positions = new int[]{0, 1, 2, 5, 8, 7, 6, 3};
                 break;
             case 5:
-                positions = new int[] {2, 1, 4, 7, 8};
+                positions = new int[]{2, 1, 4, 7, 8};
                 break;
             case 6:
-                positions = new int[] {3, 4, 7};
+                positions = new int[]{3, 4, 7};
                 break;
             case 7:
-                positions = new int[] {6, 3, 4, 5, 8};
+                positions = new int[]{6, 3, 4, 5, 8};
                 break;
             case 8:
-                positions = new int[] {7, 4, 5};
+                positions = new int[]{7, 4, 5};
                 break;
-            default: positions = new int[] {1, 3, 4};
+            default:
+                positions = new int[]{1, 3, 4};
         }
         return positions;
     }
@@ -374,9 +425,12 @@ public class WGGameFragment extends Fragment {
                 inner.setOnTouchListener(new View.OnTouchListener() {
                     @Override
                     public boolean onTouch(View view, MotionEvent event) {
-                        switch(event.getAction()){
+                        switch (event.getAction()) {
                             case MotionEvent.ACTION_DOWN:
-                                if (mLastLarge != -1 && mLastLarge == fLarge && mSmallTiles[fLarge][fSmall].getOwner() != WGTile.Owner.NEITHER) {
+                                if (mLastLarge != -1 && mLastLarge == fLarge && mSmallTiles[fLarge][fSmall].getOwner() != WGTile.Owner.NEITHER
+                                        && mSmallTiles[fLarge][fSmall].getOwner() != WGTile.Owner.UNAVAIL
+                                        || phase1 == -1 && mLastLarge != -1 && mLastLarge == fLarge && mSmallTiles[fLarge][fSmall].getOwner() == WGTile.Owner.NEITHER
+                                        && mSmallTiles[fLarge][fSmall].getOwner() != WGTile.Owner.UNAVAIL) {
                                     pressHandler.postDelayed(pressEvent, PRESS_TIME);
                                 }
                                 break;
@@ -390,7 +444,7 @@ public class WGGameFragment extends Fragment {
                                 longPressHandler.removeCallbacks(longPressed);
                                 ((WGGameActivity) getActivity()).stopThinking();
 
-                                if(!longPress && singleTap) {
+                                if (!longPress && singleTap) {
                                     //..........................................comment out animation for now
                                     smallTile.animate();
                                     // ...
@@ -400,9 +454,16 @@ public class WGGameFragment extends Fragment {
                                         currentString += smallTile.getLetter();
                                         int nomove = setNextAvailableFromLastMove(fLarge, fSmall);
                                         //do the click
-                                        mSoundPool.play(mSoundX, mVolume/2, mVolume/2, 1, 0, 1f);
-                                        makeMove(fLarge, fSmall);
-
+                                        mSoundPool.play(mSoundX, mVolume / 2, mVolume / 2, 1, 0, 1f);
+                                        if (phase1 != -1) {
+                                            makeMove(fLarge, fSmall);
+                                        } else {
+                                            mLastLarge = fLarge;
+                                            mLastSmall = fSmall;
+                                            mSmallTiles[fLarge][fSmall].setAvailable(false);
+                                            setAvailableFromLastMove(fLarge);
+                                            updateAllTiles();
+                                        }
                                         //.................comment think out for part one of this assignment 5
                                         //think();
                                     }
@@ -511,7 +572,7 @@ public class WGGameFragment extends Fragment {
     }
 
     public void restartGame() {
-        mSoundPool.play(mSoundRewind, mVolume/2, mVolume/2, 1, 0, 1f);
+        mSoundPool.play(mSoundRewind, mVolume / 2, mVolume / 2, 1, 0, 1f);
         // ...
         phase1 = 180;
         phase2 = 60;
@@ -523,7 +584,7 @@ public class WGGameFragment extends Fragment {
         currentScore = new int[]{maxInt, maxInt, maxInt, maxInt, maxInt, maxInt, maxInt, maxInt, maxInt};
         finishedBoard = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0};
         currentString = "";
-        ((WGGameActivity)getActivity()).displayWord(currentString);
+        ((WGGameActivity) getActivity()).displayWord(currentString);
         initGame();
         initViews(getView());
         makeLetterBoard();
@@ -533,8 +594,8 @@ public class WGGameFragment extends Fragment {
 
     public void restartNoTimerAndSound() {
         // ...
-        phase1 = 0;
-        phase2 = 0;
+        phase1 = 180;
+        phase2 = 60;
         timeHandler.removeCallbacks(timerPhase);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(PREF_RESTORE, "").commit();
@@ -702,6 +763,15 @@ public class WGGameFragment extends Fragment {
     public void onResume() {
         super.onResume();
         timeHandler.postDelayed(timerPhase, 0);
+    }
+
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+        if ( mDialog!=null && mDialog.isShowing() ){
+            mDialog.dismiss();
+            mDialog.cancel();
+        }
     }
 }
 

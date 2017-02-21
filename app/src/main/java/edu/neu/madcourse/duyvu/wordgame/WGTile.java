@@ -20,7 +20,7 @@ import edu.neu.madcourse.duyvu.R;
 public class WGTile {
 
     public enum Owner {
-        X, O /* letter O */, NEITHER, BOTH
+        X, O /* letter O */, NEITHER, BOTH, UNAVAIL
     }
 
     public String letter = "";
@@ -32,6 +32,7 @@ public class WGTile {
     private static final int LEVEL_BLANK = 2;
     private static final int LEVEL_AVAILABLE = 3;
     private static final int LEVEL_TIE = 3;
+    private static final int LEVEL_UNAVAIL = 4;
 
     private final WGGameFragment mGame;
     private Owner mOwner = Owner.NEITHER;
@@ -125,6 +126,9 @@ public class WGTile {
                 break;
             case NEITHER:
                 level = mGame.isAvailable(this) ? LEVEL_AVAILABLE : LEVEL_BLANK;
+                break;
+            case UNAVAIL:
+                level = LEVEL_UNAVAIL;
                 break;
         }
         return level;

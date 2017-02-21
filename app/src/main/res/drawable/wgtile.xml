@@ -20,4 +20,7 @@
    <item
       android:drawable="@drawable/wgtile_available"
       android:maxLevel="3" />
+   <item
+       android:drawable="@drawable/wgtile_empty"
+       android:maxLevel="4"/>
 </level-list>

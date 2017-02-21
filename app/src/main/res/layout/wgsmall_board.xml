@@ -13,7 +13,7 @@
    android:layout_height="wrap_content"
    android:background="@drawable/wgtile_background"
    android:elevation="@dimen/elevation_low"
-   android:padding="3dp"
+   android:padding="2dp"
    tools:context="edu.neu.madcourse.duyvu.wordgame.WGGameActivity">
 
    <Button android:id="@+id/wgsmall1" style="@style/WGTileButton"
