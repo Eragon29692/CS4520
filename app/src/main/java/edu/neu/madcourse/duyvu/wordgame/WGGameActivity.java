@@ -18,6 +18,7 @@ import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.support.annotation.IntegerRes;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -40,17 +41,19 @@ public class WGGameActivity extends AppCompatActivity {
     SharedPreferences sharedPreferences;
     private float soundVolume = NORMAL_VOLUME;
 
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.wgactivity_game);
-        dictionary = (Globals)getApplication();
+        dictionary = (Globals) getApplication();
         mGameFragment = (WGGameFragment) getFragmentManager()
                 .findFragmentById(R.id.wgfragment_game);
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         boolean restore = getIntent().getBooleanExtra(KEY_RESTORE, false);
         soundVolume = getIntent().getFloatExtra(SOUND_VOLUME, NORMAL_VOLUME);
-        Log.d("ssssss6666666666666", Float.toString(soundVolume));
         if (restore) {
             String gameData = sharedPreferences.getString(WGGameActivity.PREF_RESTORE, null);
             if (gameData != null && !gameData.equals("") && restore) {
@@ -65,8 +68,18 @@ public class WGGameActivity extends AppCompatActivity {
     }
 
     public void displayScore(String score) {
-        TextView scorePanel = (TextView) findViewById(R.id.wgactivity_game_text);
+        TextView scorePanel = (TextView) findViewById(R.id.wgactivity_game_score);
         scorePanel.setText("Score: " + score);
+    }
+
+    public void displayTime(int time) {
+        TextView timePanel = (TextView) findViewById(R.id.wgactivity_timer);
+        timePanel.setText("Time: " + Integer.toString(time));
+    }
+
+    public void displayWord(String word) {
+        TextView scorePanel = (TextView) findViewById(R.id.wgactivity_current_word);
+        scorePanel.setText(word);
     }
 
     public void restartGame() {
@@ -132,7 +145,7 @@ public class WGGameActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        mMediaPlayer = MediaPlayer.create(this, R.raw.frankum_loop001e);
+        mMediaPlayer = MediaPlayer.create(this, R.raw.canon_piano_best);
         mMediaPlayer.setLooping(true);
         mMediaPlayer.setVolume(soundVolume, soundVolume);
         mMediaPlayer.start();

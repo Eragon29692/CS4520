@@ -21,23 +21,21 @@
         style="@style/Widget.AppCompat.Button.Colored"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@android:color/holo_blue_light"
+        android:background="@drawable/dwround_blue_button"
         android:elevation="@dimen/elevation_low"
-        android:text="@string/main_menu_label"
+        android:text="MENU"
         android:layout_marginRight="5dp"
         android:fontFamily="casual"
         android:textStyle="normal|bold"
         android:layout_weight="0.72"
-        android:paddingRight="10dp"
-        android:paddingLeft="10dp"
-        android:layout_marginLeft="10dp" />
+        android:layout_marginLeft="5dp" />
 
     <Button
         android:id="@+id/wgbutton_restart"
         style="@style/Widget.AppCompat.Button.Colored"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@android:color/holo_blue_light"
+        android:background="@drawable/dwround_blue_button"
         android:elevation="@dimen/elevation_low"
         android:text="@string/restart_label"
         android:fontFamily="casual"

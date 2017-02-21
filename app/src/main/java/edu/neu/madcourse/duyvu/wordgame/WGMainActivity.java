@@ -18,7 +18,7 @@ import edu.neu.madcourse.duyvu.R;
 
 public class WGMainActivity extends AppCompatActivity {
     MediaPlayer mMediaPlayer;
-    public static final float NORMAL_VOLUME = 0.5f;
+    public static final float NORMAL_VOLUME = 1f;
     private float soundVolume = NORMAL_VOLUME;
     // ...
 
@@ -33,7 +33,7 @@ public class WGMainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        mMediaPlayer = MediaPlayer.create(this, R.raw.tictactoe_background);
+        mMediaPlayer = MediaPlayer.create(this, R.raw.canon_piano_best);
         mMediaPlayer.setVolume(soundVolume, soundVolume);
         mMediaPlayer.setLooping(true);
         mMediaPlayer.start();

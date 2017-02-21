@@ -15,6 +15,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_weight="1"
         android:gravity="center"
         android:orientation="vertical">
 
@@ -22,46 +23,88 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:gravity="center"
             android:orientation="horizontal">
 
-            <fragment
-                android:id="@+id/wgfragment_game_controls"
-                class="edu.neu.madcourse.duyvu.wordgame.WGControlFragment"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_gravity="top"
-                tools:layout="@layout/wgfragment_control" />
-
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="top"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:orientation="vertical">
 
+                <fragment
+                    android:id="@+id/wgfragment_game_controls"
+                    class="edu.neu.madcourse.duyvu.wordgame.WGControlFragment"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="top"
+                    tools:layout="@layout/wgfragment_control" />
+
                 <TextView
-                    android:id="@+id/wgactivity_game_text"
+                    android:id="@+id/wgactivity_current_word"
                     android:layout_width="match_parent"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp"
-                    android:background="@android:color/background_light"
+                    android:layout_height="48dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginTop="5dp"
+                    android:background="@drawable/dwround_current_word"
                     android:fontFamily="casual"
+                    android:gravity="center_vertical"
                     android:paddingLeft="5dp"
+                    android:textAlignment="center"
+                    android:textAllCaps="false"
+                    android:textColor="@android:color/background_light"
+                    android:textSize="18sp"
+                    android:textStyle="normal|bold" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_height="wrap_content"
+                android:layout_weight="0"
+                android:orientation="vertical"
+                android:layout_width="100dp">
+
+                <TextView
+                    android:id="@+id/wgactivity_game_score"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="5dp"
+                    android:layout_marginTop="5dp"
+                    android:background="@drawable/dwround_white_textbox"
+                    android:fontFamily="casual"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="10dp"
                     android:text="Score: "
                     android:textAllCaps="false"
                     android:textColor="@android:color/background_dark"
-                    android:layout_marginTop="5dp"
                     android:textSize="18sp"
-                    android:textStyle="normal|bold"
+                    android:textStyle="normal|bold" />
+
+                <TextView
+                    android:id="@+id/wgactivity_timer"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="5dp"
+                    android:layout_marginTop="5dp"
+                    android:background="@drawable/dwround_white_textbox"
+                    android:fontFamily="casual"
                     android:gravity="center_vertical"
-                    android:layout_height="48dp" />
+                    android:paddingLeft="10dp"
+                    android:text="Time:"
+                    android:textAllCaps="false"
+                    android:textColor="@android:color/background_dark"
+                    android:textSize="18sp"
+                    android:textStyle="normal|bold" />
+
             </LinearLayout>
+
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="0.2"
+            android:layout_weight="0.35"
             android:gravity="center"
             android:orientation="vertical">
 

@@ -8,8 +8,10 @@
  ***/
 package edu.neu.madcourse.duyvu.wordgame;
 
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.media.SoundPool;
@@ -36,6 +38,7 @@ import static edu.neu.madcourse.duyvu.wordgame.WGGameActivity.PREF_RESTORE;
 import static edu.neu.madcourse.duyvu.wordgame.WGMainActivity.NORMAL_VOLUME;
 
 public class WGGameFragment extends Fragment {
+    private AlertDialog mDialog;
     private int maxInt = Integer.MAX_VALUE;
     SharedPreferences sharedPreferences;
     static private int mLargeIds[] = {R.id.wglarge1, R.id.wglarge2, R.id.wglarge3,
@@ -70,8 +73,6 @@ public class WGGameFragment extends Fragment {
     private Handler longPressHandler = new Handler();
     private Handler pressHandler = new Handler();
 
-    private Handler timerHandler = new Handler();
-
     private String currentString = "";
     private int[] currentScore = new int[]{maxInt, maxInt, maxInt, maxInt, maxInt, maxInt, maxInt, maxInt, maxInt};
     private int[] finishedBoard = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0};
@@ -93,6 +94,48 @@ public class WGGameFragment extends Fragment {
 
     boolean longPress = false;
     boolean singleTap = true;
+
+    private Handler timeHandler = new Handler();
+    private int currentTime = 0;
+    private int phase1 = 100;
+    private int phase2 = 60;
+
+    Runnable timerPhase = new Runnable() {
+        public void run() {
+            ((WGGameActivity)getActivity()).displayTime(phase1);
+            if (phase1 > 0) {
+                phase1--;
+                timeHandler.postDelayed(this, 1000);
+            }
+            if(phase1 == 0 || checkFinishedGame()) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setMessage("TIME'S UP. YOUR SCORE IS " + calculateAndDisplayTotalScore());
+                builder.setCancelable(false);
+                builder.setPositiveButton(R.string.ok_label,
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                restartNoTimerAndSound();
+                                getActivity().finish();
+                            }
+                        });
+                mDialog = builder.show();
+            }
+        }
+    };
+
+    private boolean checkFinishedGame() {
+        boolean finished = true;
+        for (int i = 0; i < 9; i++) {
+            if (finishedBoard[i] == 0) {
+                finished = false;
+            }
+        }
+        if (finished) {
+            timeHandler.removeCallbacks(timerPhase);
+        }
+        return finished;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -129,6 +172,7 @@ public class WGGameFragment extends Fragment {
         currentString = "";
         makeLetterBoard();
         updateAllTiles();
+        //timeHandler.postDelayed(timerPhase, 1000);
         super.onStart();
     }
 
@@ -158,6 +202,7 @@ public class WGGameFragment extends Fragment {
         if (checkWord) {
             finishedBoard[mLastLarge] = 1;
             addScore(currentString.length() * scoreRatio);
+            ((WGGameActivity)getActivity()).displayWord(currentString);
             for (int i = 0; i < 9; i++) {
                 mSmallTiles[mLastLarge][i].setAvailable(false);
                 mLargeTiles[mLastLarge].setOwner(mPlayer);
@@ -335,11 +380,11 @@ public class WGGameFragment extends Fragment {
                                     pressHandler.postDelayed(pressEvent, PRESS_TIME);
                                 }
                                 break;
-                            case MotionEvent.ACTION_MOVE:
-                                pressHandler.removeCallbacks(pressEvent);
-                                longPressHandler.removeCallbacks(longPressed);
-                                ((WGGameActivity) getActivity()).stopThinking();
-                                break;
+                            //case MotionEvent.ACTION_MOVE:
+                            //    pressHandler.removeCallbacks(pressEvent);
+                            //    longPressHandler.removeCallbacks(longPressed);
+                            //    ((WGGameActivity) getActivity()).stopThinking();
+                            //    break;
                             case MotionEvent.ACTION_UP:
                                 pressHandler.removeCallbacks(pressEvent);
                                 longPressHandler.removeCallbacks(longPressed);
@@ -355,7 +400,7 @@ public class WGGameFragment extends Fragment {
                                         currentString += smallTile.getLetter();
                                         int nomove = setNextAvailableFromLastMove(fLarge, fSmall);
                                         //do the click
-                                        mSoundPool.play(mSoundX, mVolume, mVolume, 1, 0, 1f);
+                                        mSoundPool.play(mSoundX, mVolume/2, mVolume/2, 1, 0, 1f);
                                         makeMove(fLarge, fSmall);
 
                                         //.................comment think out for part one of this assignment 5
@@ -466,19 +511,43 @@ public class WGGameFragment extends Fragment {
     }
 
     public void restartGame() {
-        mSoundPool.play(mSoundRewind, mVolume, mVolume, 1, 0, 1f);
+        mSoundPool.play(mSoundRewind, mVolume/2, mVolume/2, 1, 0, 1f);
         // ...
+        phase1 = 180;
+        phase2 = 60;
+        timeHandler.removeCallbacks(timerPhase);
+        timeHandler.postDelayed(timerPhase, 0);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(PREF_RESTORE, "").commit();
         editor.putBoolean(KEY_RESTORE, false).commit();
         currentScore = new int[]{maxInt, maxInt, maxInt, maxInt, maxInt, maxInt, maxInt, maxInt, maxInt};
         finishedBoard = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0};
         currentString = "";
+        ((WGGameActivity)getActivity()).displayWord(currentString);
         initGame();
         initViews(getView());
         makeLetterBoard();
         calculateAndDisplayTotalScore();
         updateAllTiles();
+    }
+
+    public void restartNoTimerAndSound() {
+        // ...
+        phase1 = 0;
+        phase2 = 0;
+        timeHandler.removeCallbacks(timerPhase);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(PREF_RESTORE, "").commit();
+        editor.putBoolean(KEY_RESTORE, false).commit();
+        currentScore = new int[]{maxInt, maxInt, maxInt, maxInt, maxInt, maxInt, maxInt, maxInt, maxInt};
+        finishedBoard = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0};
+        currentString = "";
+        //((WGGameActivity)getActivity()).displayWord(currentString);
+        //initGame();
+        //initViews(getView());
+        //makeLetterBoard();
+        //calculateAndDisplayTotalScore();
+        //updateAllTiles();
     }
 
     public void initGame() {
@@ -543,6 +612,10 @@ public class WGGameFragment extends Fragment {
      */
     public String getState() {
         StringBuilder builder = new StringBuilder();
+        builder.append(phase1);
+        builder.append(',');
+        builder.append(phase2);
+        builder.append(',');
         builder.append(mLastLarge);
         builder.append(',');
         builder.append(mLastSmall);
@@ -577,6 +650,8 @@ public class WGGameFragment extends Fragment {
         restore = true;
         String[] fields = gameData.split(",");
         int index = 0;
+        phase1 = Integer.parseInt(fields[index++]);
+        phase2 = Integer.parseInt(fields[index++]);
         mLastLarge = Integer.parseInt(fields[index++]);
         mLastSmall = Integer.parseInt(fields[index++]);
         currentString = fields[index++];
@@ -615,6 +690,18 @@ public class WGGameFragment extends Fragment {
                 }
             }
         }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        timeHandler.removeCallbacks(timerPhase);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        timeHandler.postDelayed(timerPhase, 0);
     }
 }
 

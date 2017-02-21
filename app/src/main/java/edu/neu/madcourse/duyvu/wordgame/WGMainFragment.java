@@ -67,7 +67,7 @@ public class WGMainFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                builder.setMessage("\"1) I have not use any additional images/icons/graphics for this assignment\\\\n\\\\n3)  No outside code\\\\n\\\\n4)  No additional help from the slides and piazza\"");
+                builder.setMessage("1) I have not use any additional images/icons/graphics for this assignment\n\n2)  No outside code\n\n3)  No additional help from the slides and piazza");
                 builder.setCancelable(false);
                 builder.setPositiveButton(R.string.ok_label,
                         new DialogInterface.OnClickListener() {
