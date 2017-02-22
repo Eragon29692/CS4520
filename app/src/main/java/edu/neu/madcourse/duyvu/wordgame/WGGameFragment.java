@@ -97,8 +97,8 @@ public class WGGameFragment extends Fragment {
 
     private Handler timeHandler = new Handler();
     private int currentTime = 0;
-    private int phase1 = 180;
-    private int phase2 = 60;
+    private int phase1 = 60;
+    private int phase2 = 40;
 
     Runnable timerPhase = new Runnable() {
         public void run() {
@@ -115,7 +115,7 @@ public class WGGameFragment extends Fragment {
                 phase2--;
                 timeHandler.postDelayed(this, 1000);
             }
-            if (phase1 == 0 || checkFinishedPhase1()) {
+            if (phase1 == 0 || checkFinishedPhase1() && phase1 != -1) {
                 phase1 = -1;
                 flipBoardForPhase2();
                 timeHandler.postDelayed(this, 1000);
@@ -129,7 +129,7 @@ public class WGGameFragment extends Fragment {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 restartNoTimerAndSound();
-                                mDialog.dismiss();
+                                //mDialog.dismiss();
                                 getActivity().finish();
                             }
                         });
@@ -146,7 +146,7 @@ public class WGGameFragment extends Fragment {
             }
         }
         //if (finished) {
-         //   timeHandler.removeCallbacks(timerPhase);
+        //    timeHandler.removeCallbacks(timerPhase);
         //}
         return finished;
     }
@@ -166,7 +166,7 @@ public class WGGameFragment extends Fragment {
         dictionary = (Globals) this.getActivity().getApplication();
 
         //create board game
-        makeLetterBoard();
+        //makeLetterBoard();
     }
 
     @Override
@@ -184,7 +184,7 @@ public class WGGameFragment extends Fragment {
             return;
         }
         currentString = "";
-        makeLetterBoard();
+        //makeLetterBoard();
         updateAllTiles();
         //timeHandler.postDelayed(timerPhase, 1000);
         super.onStart();
@@ -257,9 +257,15 @@ public class WGGameFragment extends Fragment {
             addScore(currentString.length() * scoreRatio);
         } else {
             if (phase1 != -1) {
+                ((WGGameActivity) getActivity()).displayWord("WRONG!!!");
                 for (int i = 0; i < 9; i++) {
                     mSmallTiles[mLastLarge][i].setAvailable(true);
                     mSmallTiles[mLastLarge][i].setOwner(WGTile.Owner.NEITHER);
+                }
+            } else {
+                ((WGGameActivity) getActivity()).displayWord("WRONG!!!");
+                for (int i = 0; i < 9; i++) {
+                    mSmallTiles[mLastLarge][i].setAvailable(true);
                 }
             }
             addScore(-currentString.length() * scoreRatio);
@@ -479,6 +485,8 @@ public class WGGameFragment extends Fragment {
                 // ...
             }
         }
+        //adding letter to the board
+        makeLetterBoard();
     }
 
     private void think() {
@@ -587,7 +595,7 @@ public class WGGameFragment extends Fragment {
         ((WGGameActivity) getActivity()).displayWord(currentString);
         initGame();
         initViews(getView());
-        makeLetterBoard();
+        //makeLetterBoard();
         calculateAndDisplayTotalScore();
         updateAllTiles();
     }
@@ -596,7 +604,7 @@ public class WGGameFragment extends Fragment {
         // ...
         phase1 = 180;
         phase2 = 60;
-        timeHandler.removeCallbacks(timerPhase);
+        //timeHandler.removeCallbacks(timerPhase);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(PREF_RESTORE, "").commit();
         editor.putBoolean(KEY_RESTORE, false).commit();
@@ -742,12 +750,21 @@ public class WGGameFragment extends Fragment {
     //tiles with out a score mean it has not yet touched
     //therefore set the scored tiles as unavailable
     private void setUnavailableTiles(int[] score) {
-        for (int i = 0; i < 9; i++) {
-            if (score[i] == 1) {
-                //set X as ower for finished tiles
-                mLargeTiles[i].setOwner(WGTile.Owner.X);
+        if (phase1 != -1) {
+            for (int i = 0; i < 9; i++) {
+                if (score[i] == 1) {
+                    //set X as ower for finished tiles
+                    mLargeTiles[i].setOwner(WGTile.Owner.X);
+                    for (int k = 0; k < 9; k++) {
+                        mSmallTiles[i][k].setAvailable(false);
+                    }
+                }
+            }
+        } else {
+            for (int i = 0; i < 9; i++) {
+                mLargeTiles[i].setOwner(WGTile.Owner.NEITHER);
                 for (int k = 0; k < 9; k++) {
-                    mSmallTiles[i][k].setAvailable(false);
+                    mSmallTiles[i][k].setAvailable(true);
                 }
             }
         }

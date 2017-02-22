@@ -22,12 +22,15 @@ In the case of a tie in a small board, that will count as a win for
 both sides in the larger game.
 </string>
         <string name="wgabout_text">\
+ABOUT:\n
 This game is played in 2 phases:\n
 Phase 1: find the longest word in each grid\n
-Phase 2: find words in each small grid with the selected letters in phase 1\n\\n\
-Gameplay:\n
-select the letters in the grid,\n
-then HOLD on any of the selected letter to check if the word is correct\n
+Phase 2: find words in each small grid\n
+with the selected letters in phase 1\n\n\n
+GAMEPLAY:\n
+Select the letters in the grid.\n
+Then, HOLD on any selected letter\n
+to check if the word is correct\n
 Each correct letter give you 1 point.\n
 Each incorrect letter subtract your point by one.
         </string>
