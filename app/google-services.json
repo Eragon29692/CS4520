@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "913328625451",
+    "firebase_url": "https://numad17s-duyvu.firebaseio.com",
+    "project_id": "numad17s-duyvu",
+    "storage_bucket": "numad17s-duyvu.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:913328625451:android:c3a2ec3e9e2af40b",
+        "android_client_info": {
+          "package_name": "edu.neu.madcourse.duyvu"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "913328625451-8jjvmojfrbk91vdrr8rpnbn8p72qe2i0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAaDQbNRNyW7DlgOnHRt62soeomSx9hWj4"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

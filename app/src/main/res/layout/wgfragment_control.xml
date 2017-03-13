@@ -52,6 +52,7 @@
         android:elevation="@dimen/elevation_low"
         android:text="PAUSE"
         android:fontFamily="casual"
+        android:onClick="onClickPausedButton"
         android:layout_weight="0.25"
         android:textStyle="normal|bold" />
 </LinearLayout>

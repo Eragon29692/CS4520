@@ -70,6 +70,13 @@ public class MainMenu extends AppCompatActivity {
         Intent intent = new Intent(this, WGMainActivity.class);
         startActivity(intent);
     }
+
+    public void onClickCommunication(View view)
+    {
+        Intent intent = new Intent(this, edu.neu.madcourse.duyvu.communication.MainActivity.class);
+        startActivity(intent);
+    }
+
     public void onClickQuit(View view)
     {
         finish();

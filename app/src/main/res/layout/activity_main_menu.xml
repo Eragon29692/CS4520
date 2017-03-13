@@ -90,6 +90,20 @@
             android:fontFamily="monospace" />
 
         <Button
+            android:text="Communication"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/communicationButton"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:elevation="0dp"
+            android:background="@android:color/holo_blue_light"
+            android:layout_marginTop="5dp"
+            android:textSize="18sp"
+            android:onClick="onClickCommunication"
+            android:textStyle="normal|bold"
+            android:fontFamily="monospace" />
+
+        <Button
             android:text="Quit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

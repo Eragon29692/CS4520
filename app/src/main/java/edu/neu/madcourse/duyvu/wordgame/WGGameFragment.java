@@ -26,6 +26,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
@@ -65,6 +66,8 @@ public class WGGameFragment extends Fragment {
     //flag for restoring letter orders
     private boolean restore = false;
 
+    private ArrayList<String> usedWords = new ArrayList<>();
+
     private int scoreRatio = 1;
 
     public static int LONG_PRESS_TIME = 600; // Time in miliseconds
@@ -97,8 +100,8 @@ public class WGGameFragment extends Fragment {
 
     private Handler timeHandler = new Handler();
     private int currentTime = 0;
-    private int phase1 = 60;
-    private int phase2 = 40;
+    private int phase1 = 120;
+    private int phase2 = 60;
 
     Runnable timerPhase = new Runnable() {
         public void run() {
@@ -106,6 +109,9 @@ public class WGGameFragment extends Fragment {
                 ((WGGameActivity) getActivity()).displayTime(phase1);
             } else {
                 ((WGGameActivity) getActivity()).displayTime(phase2);
+            }
+            if (phase1 == 10) {
+                ((WGGameActivity)getActivity()).animationForTimer(9);
             }
             if (phase1 > 0) {
                 phase1--;
@@ -120,16 +126,19 @@ public class WGGameFragment extends Fragment {
                 flipBoardForPhase2();
                 timeHandler.postDelayed(this, 1000);
             }
+            if (phase2 == 10) {
+                ((WGGameActivity)getActivity()).animationForTimer(9);
+            }
             if (phase1 == -1 && phase2 == 0) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                 builder.setMessage("TIME'S UP. YOUR SCORE IS " + calculateAndDisplayTotalScore());
                 builder.setCancelable(false);
+
                 builder.setPositiveButton(R.string.ok_label,
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 restartNoTimerAndSound();
-                                //mDialog.dismiss();
                                 getActivity().finish();
                             }
                         });
@@ -240,7 +249,7 @@ public class WGGameFragment extends Fragment {
         longPress = true;
         singleTap = false;
         Boolean checkWord = ((WGGameActivity) getActivity()).dictionary.checkDictionary(currentString);
-        if (checkWord) {
+        if (checkWord && !usedWords.contains(currentString)) {
             if (phase1 != -1) {
                 finishedBoard[mLastLarge] = 1;
                 ((WGGameActivity) getActivity()).displayWord(currentString);
@@ -255,15 +264,24 @@ public class WGGameFragment extends Fragment {
                 }
             }
             addScore(currentString.length() * scoreRatio);
+            usedWords.add(currentString);
         } else {
             if (phase1 != -1) {
-                ((WGGameActivity) getActivity()).displayWord("WRONG!!!");
+                if (usedWords.contains(currentString)) {
+                    ((WGGameActivity) getActivity()).displayWord("ALREADY USED!!!");
+                } else {
+                    ((WGGameActivity) getActivity()).displayWord("WRONG!!!");
+                }
                 for (int i = 0; i < 9; i++) {
                     mSmallTiles[mLastLarge][i].setAvailable(true);
                     mSmallTiles[mLastLarge][i].setOwner(WGTile.Owner.NEITHER);
                 }
             } else {
-                ((WGGameActivity) getActivity()).displayWord("WRONG!!!");
+                if (usedWords.contains(currentString)) {
+                    ((WGGameActivity) getActivity()).displayWord("ALREADY USED!!!");
+                } else {
+                    ((WGGameActivity) getActivity()).displayWord("WRONG!!!");
+                }
                 for (int i = 0; i < 9; i++) {
                     mSmallTiles[mLastLarge][i].setAvailable(true);
                 }
@@ -631,7 +649,7 @@ public class WGGameFragment extends Fragment {
             mLargeTiles[large].setSubTiles(mSmallTiles[large]);
         }
         mEntireBoard.setSubTiles(mLargeTiles);
-
+        usedWords.clear();
         // If the player moves first, set which spots are available
         mLastSmall = -1;
         mLastLarge = -1;
@@ -709,6 +727,11 @@ public class WGGameFragment extends Fragment {
                 builder.append(',');
             }
         }
+        //adding the used word list
+        for (int i = 0; i < usedWords.size(); i++) {
+            builder.append(usedWords.get(i));
+            builder.append(',');
+        }
         return builder.toString();
     }
 
@@ -741,6 +764,11 @@ public class WGGameFragment extends Fragment {
                     mSmallTiles[large][small].setLetter(values[1]);
             }
         }
+        //putting the list of used words
+        for (int i = index; i < fields.length; i++) {
+            usedWords.add(fields[i]);
+        }
+
         setUnavailableTiles(finishedBoard);
         setNextAvailableFromLastMove(mLastLarge, mLastSmall);
         setAvailableFromLastMove(mLastLarge);
@@ -783,11 +811,10 @@ public class WGGameFragment extends Fragment {
     }
 
     @Override
-    public void onDestroy(){
+    public void onDestroy() {
         super.onDestroy();
-        if ( mDialog!=null && mDialog.isShowing() ){
+        if (mDialog != null && mDialog.isShowing()) {
             mDialog.dismiss();
-            mDialog.cancel();
         }
     }
 }

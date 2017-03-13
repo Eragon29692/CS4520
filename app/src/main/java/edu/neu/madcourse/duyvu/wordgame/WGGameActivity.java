@@ -12,6 +12,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
@@ -23,6 +24,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+
+import org.w3c.dom.Text;
 
 import edu.neu.madcourse.duyvu.Globals;
 import edu.neu.madcourse.duyvu.R;
@@ -40,9 +43,13 @@ public class WGGameActivity extends AppCompatActivity {
     public Globals dictionary;
     SharedPreferences sharedPreferences;
     private float soundVolume = NORMAL_VOLUME;
+    private Handler animationHandler = new Handler();
 
+    Runnable animationTimer = new Runnable() {
+        public void run() {
 
-
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,6 +87,20 @@ public class WGGameActivity extends AppCompatActivity {
     public void displayWord(String word) {
         TextView scorePanel = (TextView) findViewById(R.id.wgactivity_current_word);
         scorePanel.setText(word);
+    }
+
+    public void onClickPausedButton(View view)
+    {
+        Intent intent = new Intent(WGGameActivity.this, WGPausedActivity.class);
+        intent.putExtra(SOUND_VOLUME, soundVolume);
+        finish();
+        startActivity(intent);
+    }
+
+    public void animationForTimer(int time) {
+        TextView timerPanel = (TextView) findViewById(R.id.wgactivity_timer);
+        TimerRunnable timerRunnable = new TimerRunnable(time, timerPanel, animationHandler);
+        animationHandler.postDelayed(timerRunnable, 1000);
     }
 
     public void restartGame() {
@@ -162,5 +183,32 @@ public class WGGameActivity extends AppCompatActivity {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(PREF_RESTORE, gameData).commit();
         Log.d("UT3", "state = " + gameData);
+    }
+}
+
+class TimerRunnable implements Runnable {
+    private int time;
+    private TextView timerPanel;
+    private Handler animationHandler;
+    public TimerRunnable(int time, TextView timerPanel, Handler animationHandler) {
+        this.time = time;
+        this.timerPanel = timerPanel;
+        this.animationHandler = animationHandler;
+    }
+
+    @Override
+    public void run() {
+        if (time > 0) {
+            if (time % 2 == 1) {
+                timerPanel.setBackgroundResource(R.drawable.dwround_blue_button);
+            } else {
+                timerPanel.setBackgroundResource(R.drawable.dwround_white_textbox);
+            }
+            time--;
+            animationHandler.postDelayed(this, 1000);
+        } else {
+            timerPanel.setBackgroundResource(R.drawable.dwround_white_textbox);
+            animationHandler.removeCallbacks(this);
+        }
     }
 }
