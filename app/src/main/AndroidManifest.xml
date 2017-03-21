@@ -43,7 +43,7 @@
         <activity
             android:name=".wordgame.WGPausedActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.AppCompat.NoActionBar"/>
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
         <activity
             android:name=".dictionary.DictionaryMainActivity"
             android:label="@string/test_dictionary"
@@ -75,6 +75,9 @@
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>
         </service>
+
+        <activity android:name=".communication.GamePlayDemo.ChooseUsername" />
+        <activity android:name=".communication.GamePlayDemo.ChoosePlayer"></activity>
     </application>
 
 </manifest>

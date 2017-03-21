@@ -6,11 +6,14 @@ import android.os.Bundle;
 import android.view.View;
 
 import edu.neu.madcourse.duyvu.R;
+import edu.neu.madcourse.duyvu.communication.GamePlayDemo.ChooseUsername;
+import edu.neu.madcourse.duyvu.communication.GamePlayDemo.GameplayDemoActivity;
 import edu.neu.madcourse.duyvu.communication.fcm.FCMActivity;
 import edu.neu.madcourse.duyvu.communication.realtimedatabase.RealtimeDatabaseActivity;
 
 
 public class MainActivity extends AppCompatActivity {
+    public static final String USER_NAME = "user_name";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,5 +27,9 @@ public class MainActivity extends AppCompatActivity {
 
     public void openDBActivity(View view) {
         startActivity(new Intent(MainActivity.this, RealtimeDatabaseActivity.class));
+    }
+
+    public void openGameplayDemoActivity(View view) {
+        startActivity(new Intent(MainActivity.this, ChooseUsername.class));
     }
 }

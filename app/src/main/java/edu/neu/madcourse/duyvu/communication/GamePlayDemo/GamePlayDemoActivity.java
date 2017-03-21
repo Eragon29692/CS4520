@@ -1,4 +1,4 @@
-package edu.neu.madcourse.duyvu.communication.realtimedatabase;
+package edu.neu.madcourse.duyvu.communication.GamePlayDemo;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -18,12 +18,12 @@ import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 
 import edu.neu.madcourse.duyvu.R;
-import edu.neu.madcourse.duyvu.communication.realtimedatabase.models.User;
+import edu.neu.madcourse.duyvu.communication.GamePlayDemo.models.User;
 
 
-public class RealtimeDatabaseActivity extends AppCompatActivity {
+public class GameplayDemoActivity extends AppCompatActivity {
 
-    private static final String TAG = RealtimeDatabaseActivity.class.getSimpleName();
+    private static final String TAG = GameplayDemoActivity.class.getSimpleName();
 
     private DatabaseReference mDatabase;
     private TextView userName;
@@ -52,7 +52,7 @@ public class RealtimeDatabaseActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (connectionStatus)
-                    RealtimeDatabaseActivity.this.onAddScore(mDatabase, player1.isChecked() ? "user1" : "user2");
+                    GameplayDemoActivity.this.onAddScore(mDatabase, player1.isChecked() ? "user1" : "user2");
             }
         });
 
@@ -104,8 +104,8 @@ public class RealtimeDatabaseActivity extends AppCompatActivity {
         );
 
 
-        User user1 = new User("user1", "0");
-        User user2 = new User("user2", "0");
+        User user1 = new User("user1", "10");
+        User user2 = new User("user2", "5");
         mDatabase.child("users").child("user1").setValue(user1);
         mDatabase.child("users").child("user2").setValue(user2);
 
