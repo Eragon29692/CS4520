@@ -104,6 +104,20 @@
             android:fontFamily="monospace" />
 
         <Button
+            android:text="Two Player Word Game"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/tpwgButton"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:elevation="0dp"
+            android:background="@android:color/holo_blue_light"
+            android:layout_marginTop="5dp"
+            android:textSize="18sp"
+            android:onClick="onClickTwoPlayerWordGame"
+            android:textStyle="normal|bold"
+            android:fontFamily="monospace" />
+
+        <Button
             android:text="Quit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

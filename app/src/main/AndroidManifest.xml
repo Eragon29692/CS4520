@@ -82,6 +82,24 @@
             android:screenOrientation="portrait" />
         <activity android:name=".communication.GamePlayDemo.GameplayDemoActivity"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".twoplayergame.ChooseUsername"
+            android:screenOrientation="portrait"
+            android:label="Two Player Word Game" />
+        <activity android:name=".twoplayergame.ChoosePlayer"
+            android:screenOrientation="portrait" />
+        <activity android:name=".twoplayergame.GameplayDemoActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".twoplayergame.TPWGGameActivity"
+            android:label="Scroggle"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
+        <activity
+            android:name=".twoplayergame.TPWGPausedActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
+
     </application>
 
 </manifest>

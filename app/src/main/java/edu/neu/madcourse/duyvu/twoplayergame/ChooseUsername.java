@@ -1,26 +1,24 @@
-package edu.neu.madcourse.duyvu.communication.GamePlayDemo;
+package edu.neu.madcourse.duyvu.twoplayergame;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.TextView;
 
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.iid.FirebaseInstanceId;
-
+import edu.neu.madcourse.duyvu.Globals;
 import edu.neu.madcourse.duyvu.R;
 
 import static edu.neu.madcourse.duyvu.communication.MainActivity.USER_NAME;
 
 public class ChooseUsername extends AppCompatActivity {
-    private DatabaseReference mDatabase;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_communication_choose_username);
-        mDatabase = FirebaseDatabase.getInstance().getReference();
+        Globals dictionary = (Globals) getApplication();
+        dictionary.setDictionary();
     }
 
     public void onClickChooseUsername(View view) {
@@ -32,5 +30,4 @@ public class ChooseUsername extends AppCompatActivity {
             startActivity(intent);
         }
     }
-
 }

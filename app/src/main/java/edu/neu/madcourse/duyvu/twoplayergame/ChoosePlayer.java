@@ -1,8 +1,8 @@
-package edu.neu.madcourse.duyvu.communication.GamePlayDemo;
+package edu.neu.madcourse.duyvu.twoplayergame;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -21,7 +21,8 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import java.util.ArrayList;
 
 import edu.neu.madcourse.duyvu.R;
-import edu.neu.madcourse.duyvu.communication.GamePlayDemo.models.User;
+import edu.neu.madcourse.duyvu.twoplayergame.models.User;
+import edu.neu.madcourse.duyvu.wordgame.*;
 
 import static edu.neu.madcourse.duyvu.communication.MainActivity.USER_NAME;
 
@@ -52,9 +53,8 @@ public class ChoosePlayer extends AppCompatActivity {
                                     long arg3) {
                 String opponentId = ((User) adapter.getItemAtPosition(position)).userId;
                 mDatabase.child("users").child(FirebaseInstanceId.getInstance().getToken()).child("playing").setValue(opponentId);
-                mDatabase.child("users").child(FirebaseInstanceId.getInstance().getToken()).child("score").setValue("0");
                 mDatabase.child("users").child(FirebaseInstanceId.getInstance().getToken()).child("status").setValue("InGame");
-                Intent intent = new Intent(ChoosePlayer.this, GameplayDemoActivity.class);
+                Intent intent = new Intent(ChoosePlayer.this, TPWGGameActivity.class);
                 startActivity(intent);
                 mDatabase.child("users").removeEventListener(childEventListener);
                 mDatabase.child(".info/connected").removeEventListener(valueEventListener);
@@ -77,6 +77,7 @@ public class ChoosePlayer extends AppCompatActivity {
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String previousID) {
                 User user = dataSnapshot.getValue(User.class);
+                String token = FirebaseInstanceId.getInstance().getToken();
                 for (int i = 0; i < listItems.size(); i++) {
                     if (listItems.get(i).userId.equals(user.userId)) {
                         listItems.remove(i);
@@ -86,10 +87,9 @@ public class ChoosePlayer extends AppCompatActivity {
                     listItems.add(user);
                 }
                 if (user.playing != null && user.playing.equals(FirebaseInstanceId.getInstance().getToken()) && user.status.equals("Online")) {
-                    Intent intent = new Intent(ChoosePlayer.this, GameplayDemoActivity.class);
-                    mDatabase.child("users").child(FirebaseInstanceId.getInstance().getToken()).child("playing").setValue(user.userId);
-                    mDatabase.child("users").child(FirebaseInstanceId.getInstance().getToken()).child("score").setValue("0");
-                    mDatabase.child("users").child(FirebaseInstanceId.getInstance().getToken()).child("status").setValue("InGame");
+                    Intent intent = new Intent(ChoosePlayer.this, TPWGGameActivity.class);
+                    mDatabase.child("users").child(token).child("playing").setValue(user.userId);
+                    mDatabase.child("users").child(token).child("status").setValue("InGame");
                     startActivity(intent);
                     ChoosePlayer.this.finish();
                 }
@@ -145,7 +145,6 @@ public class ChoosePlayer extends AppCompatActivity {
                     });
                     mDatabase.child("users").child(token).child("status").onDisconnect().setValue("Offine");
                     mDatabase.child("users").child(token).child("playing").onDisconnect().setValue("");
-                    mDatabase.child("users").child(token).child("score").onDisconnect().setValue("0");
 
                     Log.d("ChoosePlayer", "connected");
                 } else {
@@ -185,7 +184,6 @@ public class ChoosePlayer extends AppCompatActivity {
         mDatabase.child(".info/connected").removeEventListener(valueEventListener);
         mDatabase.child("users").child(token).child("status").setValue("Offine");
         mDatabase.child("users").child(token).child("playing").setValue("");
-        mDatabase.child("users").child(token).child("score").setValue("0");
         this.finish();
     }
 }

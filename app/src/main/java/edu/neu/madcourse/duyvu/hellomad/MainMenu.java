@@ -16,6 +16,7 @@ import edu.neu.madcourse.duyvu.Globals;
 import edu.neu.madcourse.duyvu.R;
 import edu.neu.madcourse.duyvu.dictionary.DictionaryMainActivity;
 import edu.neu.madcourse.duyvu.tictactoe.MainActivity;
+import edu.neu.madcourse.duyvu.twoplayergame.ChooseUsername;
 import edu.neu.madcourse.duyvu.wordgame.WGMainActivity;
 
 public class MainMenu extends AppCompatActivity {
@@ -74,6 +75,12 @@ public class MainMenu extends AppCompatActivity {
     public void onClickCommunication(View view)
     {
         Intent intent = new Intent(this, edu.neu.madcourse.duyvu.communication.MainActivity.class);
+        startActivity(intent);
+    }
+
+    public void onClickTwoPlayerWordGame(View view)
+    {
+        Intent intent = new Intent(this, ChooseUsername.class);
         startActivity(intent);
     }
 

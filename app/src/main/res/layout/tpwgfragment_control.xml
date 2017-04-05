@@ -1,0 +1,58 @@
+<!--
+ ! Excerpted from "Hello, Android",
+ ! published by The Pragmatic Bookshelf.
+ ! Copyrights apply to this code. It may not be used to create training material, 
+ ! courses, books, articles, and the like. Contact us if you are in doubt.
+ ! We make no guarantees that this code is fit for any purpose. 
+ ! Visit http://www.pragmaticprogrammer.com/titles/eband4 for more book information.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:paddingTop="5dp"
+
+    tools:context="edu.neu.madcourse.duyvu.twoplayergame.TPWGGameActivity"
+    android:weightSum="1">
+
+    <Button
+        android:id="@+id/tpwgbutton_main"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/dwround_blue_button"
+        android:elevation="@dimen/elevation_low"
+        android:text="MENU"
+        android:layout_marginRight="5dp"
+        android:fontFamily="casual"
+        android:textStyle="normal|bold"
+        android:layout_weight="0.6"
+        android:layout_marginLeft="5dp" />
+
+    <Button
+        android:id="@+id/tpwgbutton_restart"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/dwround_blue_button"
+        android:elevation="@dimen/elevation_low"
+        android:text="@string/restart_label"
+        android:fontFamily="casual"
+        android:textStyle="normal|bold"
+        android:layout_weight="0.15"
+        android:layout_marginRight="5dp" />
+
+    <Button
+        android:id="@+id/tpwgbutton_pause"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/dwround_blue_button"
+        android:elevation="@dimen/elevation_low"
+        android:text="PAUSE"
+        android:fontFamily="casual"
+        android:onClick="onClickPausedButton"
+        android:layout_weight="0.25"
+        android:textStyle="normal|bold" />
+</LinearLayout>
