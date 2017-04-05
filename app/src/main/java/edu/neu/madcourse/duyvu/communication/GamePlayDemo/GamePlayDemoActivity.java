@@ -1,5 +1,6 @@
 package edu.neu.madcourse.duyvu.communication.GamePlayDemo;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -16,6 +17,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import edu.neu.madcourse.duyvu.R;
 import edu.neu.madcourse.duyvu.communication.GamePlayDemo.models.User;
@@ -33,6 +35,10 @@ public class GameplayDemoActivity extends AppCompatActivity {
     private RadioButton player1;
     private Button add5;
     private boolean connectionStatus = true;
+    private String opponentToken = "";
+    private ChildEventListener childEventListener;
+    private ValueEventListener valueEventListener;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,23 +57,27 @@ public class GameplayDemoActivity extends AppCompatActivity {
         add5.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (connectionStatus)
-                    GameplayDemoActivity.this.onAddScore(mDatabase, player1.isChecked() ? "user1" : "user2");
+                if (connectionStatus) {
+                    String token = FirebaseInstanceId.getInstance().getToken();
+                    GameplayDemoActivity.this.onAddScore(mDatabase, player1.isChecked() ? token : opponentToken);
+                }
             }
         });
 
-        mDatabase.child("users").addChildEventListener(
-                new ChildEventListener() {
+
+
+        childEventListener = new ChildEventListener() {
                     @Override
                     public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                         User user = dataSnapshot.getValue(User.class);
 
-                        if (dataSnapshot.getKey().equalsIgnoreCase("user1")) {
+                        if (dataSnapshot.getKey().equalsIgnoreCase(FirebaseInstanceId.getInstance().getToken())) {
                             score.setText(user.score);
                             userName.setText(user.username);
                         } else {
                             score2.setText(String.valueOf(user.score));
                             userName2.setText(user.username);
+                            opponentToken = user.userId;
                         }
                         Log.e(TAG, "onChildAdded: dataSnapshot = " + dataSnapshot.getValue());
                     }
@@ -76,7 +86,7 @@ public class GameplayDemoActivity extends AppCompatActivity {
                     public void onChildChanged(DataSnapshot dataSnapshot, String s) {
                         User user = dataSnapshot.getValue(User.class);
 
-                        if (dataSnapshot.getKey().equalsIgnoreCase("user1")) {
+                        if (dataSnapshot.getKey().equalsIgnoreCase(FirebaseInstanceId.getInstance().getToken())) {
                             score.setText(user.score);
                             userName.setText(user.username);
                         } else {
@@ -100,17 +110,10 @@ public class GameplayDemoActivity extends AppCompatActivity {
                     public void onCancelled(DatabaseError databaseError) {
                         Log.e(TAG, "onCancelled:" + databaseError);
                     }
-                }
-        );
+                };
 
 
-        User user1 = new User("user1", "10");
-        User user2 = new User("user2", "5");
-        mDatabase.child("users").child("user1").setValue(user1);
-        mDatabase.child("users").child("user2").setValue(user2);
-
-        DatabaseReference connectedRef = FirebaseDatabase.getInstance().getReference(".info/connected");
-        connectedRef.addValueEventListener(new ValueEventListener() {
+        valueEventListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 boolean connected = snapshot.getValue(Boolean.class);
@@ -127,8 +130,39 @@ public class GameplayDemoActivity extends AppCompatActivity {
             public void onCancelled(DatabaseError error) {
                 Log.d("mytag","listener canceled");
             }
-        });
+        };
 
+    }
+
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mDatabase.child("users").addChildEventListener(childEventListener);
+        mDatabase.child(".info/connected").addValueEventListener(valueEventListener);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();  // Always call the superclass method first
+        mDatabase.child("users").removeEventListener(childEventListener);
+        mDatabase.child(".info/connected").removeEventListener(valueEventListener);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mDatabase.child("users").child(FirebaseInstanceId.getInstance().getToken()).child("status").setValue("Offline");
+        mDatabase.child("users").child(FirebaseInstanceId.getInstance().getToken()).child("score").setValue("0");
+        mDatabase.child("users").child(FirebaseInstanceId.getInstance().getToken()).child("playing").setValue("");
+    }
+
+    @Override
+    public void onBackPressed() {
+        String token = FirebaseInstanceId.getInstance().getToken();
+        mDatabase.child("users").removeEventListener(childEventListener);
+        mDatabase.child(".info/connected").removeEventListener(valueEventListener);
+        this.finish();
     }
 
 

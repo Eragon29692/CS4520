@@ -76,8 +76,12 @@
             </intent-filter>
         </service>
 
-        <activity android:name=".communication.GamePlayDemo.ChooseUsername" />
-        <activity android:name=".communication.GamePlayDemo.ChoosePlayer"></activity>
+        <activity android:name=".communication.GamePlayDemo.ChooseUsername"
+            android:screenOrientation="portrait" />
+        <activity android:name=".communication.GamePlayDemo.ChoosePlayer"
+            android:screenOrientation="portrait" />
+        <activity android:name=".communication.GamePlayDemo.GameplayDemoActivity"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>

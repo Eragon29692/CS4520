@@ -10,4 +10,38 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="edu.neu.madcourse.duyvu.communication.GamePlayDemo.ChoosePlayer">
 
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:weightSum="1">
+
+        <TextView
+            android:text="Pick A Player"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/textView3"
+            android:textStyle="normal|bold"
+            android:textAllCaps="true"
+            android:textSize="24sp"
+            android:textAlignment="center"
+            android:fontFamily="casual"
+            android:textColor="@android:color/white"
+            android:layout_marginBottom="10dp" />
+
+        <TextView
+            android:text="Available Players:"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/textView4"
+            android:fontFamily="casual"
+            android:textColor="@android:color/white"
+            android:textSize="18sp"
+            android:textStyle="normal|bold" />
+
+        <ListView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/communicationPlayerList" />
+    </LinearLayout>
 </RelativeLayout>
