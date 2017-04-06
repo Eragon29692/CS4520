@@ -24,8 +24,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.ArrayList;
@@ -35,6 +38,7 @@ import java.util.Set;
 
 import edu.neu.madcourse.duyvu.Globals;
 import edu.neu.madcourse.duyvu.R;
+import edu.neu.madcourse.duyvu.twoplayergame.models.User;
 
 import static edu.neu.madcourse.duyvu.wordgame.WGGameActivity.KEY_RESTORE;
 import static edu.neu.madcourse.duyvu.wordgame.WGGameActivity.PREF_RESTORE;
@@ -52,17 +56,22 @@ public class TPWGGameFragment extends Fragment {
             R.id.tpwgsmall4, R.id.tpwgsmall5, R.id.tpwgsmall6, R.id.tpwgsmall7, R.id.tpwgsmall8,
             R.id.tpwgsmall9,};
     private Handler mHandler = new Handler();
+    private ValueEventListener connectionEventListener;
+    private ValueEventListener userEventListener;
+    private boolean connectionStatus = true;
     private TPWGTile mEntireBoard = new TPWGTile(this);
     private TPWGTile mLargeTiles[] = new TPWGTile[9];
     private TPWGTile mSmallTiles[][] = new TPWGTile[9][9];
     private TPWGTile.Owner mPlayer = TPWGTile.Owner.X;
+    private TPWGTile.Owner myPlayer = TPWGTile.Owner.X;
     private Set<TPWGTile> mAvailable = new HashSet<TPWGTile>();
     private int mSoundX, mSoundO, mSoundMiss, mSoundRewind;
     private SoundPool mSoundPool;
-    private float mVolume = NORMAL_VOLUME;
+    private float mVolume = 0f; //NORMAL_VOLUME;
     private int mLastLarge;
     private int mLastSmall;
     Globals dictionary;
+    String opponentId = "unknown";
     //letter board
     private String[][] boardGame = new String[9][9];
     private Random randomGenerator = new Random();
@@ -110,11 +119,22 @@ public class TPWGGameFragment extends Fragment {
         public void run() {
             if (phase1 != -1) {
                 ((TPWGGameActivity) getActivity()).displayTime(phase1);
+                if (phase1 % 10 == 0) {
+                    if ((phase1 / 10) % 2 == 1) {
+                        mPlayer = TPWGTile.Owner.X;
+                    } else {
+                        mPlayer = TPWGTile.Owner.O;
+                    }
+                    pressHandler.removeCallbacks(pressEvent);
+                    longPressHandler.removeCallbacks(longPressed);
+                    ((TPWGGameActivity) getActivity()).stopThinking();
+                    ((TPWGGameActivity) getActivity()).stopThinking();
+                }
             } else {
                 ((TPWGGameActivity) getActivity()).displayTime(phase2);
             }
             if (phase1 == 10) {
-                ((TPWGGameActivity)getActivity()).animationForTimer(9);
+                ((TPWGGameActivity) getActivity()).animationForTimer(9);
             }
             if (phase1 > 0) {
                 phase1--;
@@ -130,7 +150,7 @@ public class TPWGGameFragment extends Fragment {
                 timeHandler.postDelayed(this, 1000);
             }
             if (phase2 == 10) {
-                ((TPWGGameActivity)getActivity()).animationForTimer(9);
+                ((TPWGGameActivity) getActivity()).animationForTimer(9);
             }
             if (phase1 == -1 && phase2 == 0) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -180,6 +200,39 @@ public class TPWGGameFragment extends Fragment {
 
         //create board game
         //makeLetterBoard();
+        connectionEventListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                boolean connected = snapshot.getValue(Boolean.class);
+                if (connected) {
+                    connectionStatus = true;
+                    Log.d("mytag", "connected");
+                } else {
+                    connectionStatus = false;
+                    Log.d("mytag", "disconnected");
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                Log.d("mytag", "listener canceled");
+            }
+        };
+
+        userEventListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                User user = dataSnapshot.getValue(User.class);
+                if (user != null && !user.data.equals("") && user.data.substring(0, user.data.indexOf(",")).equals(opponentId)) {
+                    updateState(user.data);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
     }
 
     @Override
@@ -206,7 +259,7 @@ public class TPWGGameFragment extends Fragment {
     private int calculateAndDisplayTotalScore() {
         int total = 0;
         for (int i = 0; i < 9; i++) {
-            if (currentScore[i] != maxInt) {
+            if (currentScore[i] != maxInt && mLargeTiles[i].getOwner() == myPlayer) {
                 total += currentScore[i] * scoreRatio;
             }
         }
@@ -255,11 +308,11 @@ public class TPWGGameFragment extends Fragment {
         Boolean checkWord = ((TPWGGameActivity) getActivity()).dictionary.checkDictionary(currentString);
         if (checkWord && !usedWords.contains(currentString)) {
             if (phase1 != -1) {
-                finishedBoard[mLastLarge] = 1;
+                finishedBoard[mLastLarge] = (myPlayer == TPWGTile.Owner.X ? 1 : 2);
                 ((TPWGGameActivity) getActivity()).displayWord(currentString);
                 for (int i = 0; i < 9; i++) {
                     mSmallTiles[mLastLarge][i].setAvailable(false);
-                    mLargeTiles[mLastLarge].setOwner(mPlayer);
+                    mLargeTiles[mLastLarge].setOwner(myPlayer);
                 }
             } else {
                 ((TPWGGameActivity) getActivity()).displayWord(currentString);
@@ -303,6 +356,7 @@ public class TPWGGameFragment extends Fragment {
         calculateAndDisplayTotalScore();
         setAllAvailable();
         updateAllTiles();
+        mDatabase.child("users").child(opponentId).child("data").setValue(getState());
     }
 
     private void onPressed() {
@@ -453,52 +507,54 @@ public class TPWGGameFragment extends Fragment {
                 inner.setOnTouchListener(new View.OnTouchListener() {
                     @Override
                     public boolean onTouch(View view, MotionEvent event) {
-                        switch (event.getAction()) {
-                            case MotionEvent.ACTION_DOWN:
-                                if (mLastLarge != -1 && mLastLarge == fLarge && mSmallTiles[fLarge][fSmall].getOwner() != TPWGTile.Owner.NEITHER
-                                        && mSmallTiles[fLarge][fSmall].getOwner() != TPWGTile.Owner.UNAVAIL
-                                        || phase1 == -1 && mLastLarge != -1 && mLastLarge == fLarge && mSmallTiles[fLarge][fSmall].getOwner() == TPWGTile.Owner.NEITHER
-                                        && mSmallTiles[fLarge][fSmall].getOwner() != TPWGTile.Owner.UNAVAIL) {
-                                    pressHandler.postDelayed(pressEvent, PRESS_TIME);
-                                }
-                                break;
-                            //case MotionEvent.ACTION_MOVE:
-                            //    pressHandler.removeCallbacks(pressEvent);
-                            //    longPressHandler.removeCallbacks(longPressed);
-                            //    ((TPWGGameActivity) getActivity()).stopThinking();
-                            //    break;
-                            case MotionEvent.ACTION_UP:
-                                pressHandler.removeCallbacks(pressEvent);
-                                longPressHandler.removeCallbacks(longPressed);
-                                ((TPWGGameActivity) getActivity()).stopThinking();
-
-                                if (!longPress && singleTap) {
-                                    //..........................................comment out animation for now
-                                    smallTile.animate();
-                                    // ...
-                                    if (isAvailable(smallTile) && mSmallTiles[fLarge][fSmall].getAvailable()) {
-                                        //.....................................comment out thinking for now
-                                        //making other unvavalable
-                                        currentString += smallTile.getLetter();
-                                        int nomove = setNextAvailableFromLastMove(fLarge, fSmall);
-                                        //do the click
-                                        mSoundPool.play(mSoundX, mVolume / 2, mVolume / 2, 1, 0, 1f);
-                                        if (phase1 != -1) {
-                                            makeMove(fLarge, fSmall);
-                                        } else {
-                                            mLastLarge = fLarge;
-                                            mLastSmall = fSmall;
-                                            mSmallTiles[fLarge][fSmall].setAvailable(false);
-                                            setAvailableFromLastMove(fLarge);
-                                            updateAllTiles();
-                                        }
-                                        //.................comment think out for part one of this assignment 5
-                                        //think();
+                        if (mPlayer == myPlayer) {
+                            switch (event.getAction()) {
+                                case MotionEvent.ACTION_DOWN:
+                                    if (mLastLarge != -1 && mLastLarge == fLarge && mSmallTiles[fLarge][fSmall].getOwner() != TPWGTile.Owner.NEITHER
+                                            && mSmallTiles[fLarge][fSmall].getOwner() != TPWGTile.Owner.UNAVAIL
+                                            || phase1 == -1 && mLastLarge != -1 && mLastLarge == fLarge && mSmallTiles[fLarge][fSmall].getOwner() == TPWGTile.Owner.NEITHER
+                                            && mSmallTiles[fLarge][fSmall].getOwner() != TPWGTile.Owner.UNAVAIL) {
+                                        pressHandler.postDelayed(pressEvent, PRESS_TIME);
                                     }
-                                }
-                                longPress = false;
-                                singleTap = true;
-                                break;
+                                    break;
+                                //case MotionEvent.ACTION_MOVE:
+                                //    pressHandler.removeCallbacks(pressEvent);
+                                //    longPressHandler.removeCallbacks(longPressed);
+                                //    ((TPWGGameActivity) getActivity()).stopThinking();
+                                //    break;
+                                case MotionEvent.ACTION_UP:
+                                    pressHandler.removeCallbacks(pressEvent);
+                                    longPressHandler.removeCallbacks(longPressed);
+                                    ((TPWGGameActivity) getActivity()).stopThinking();
+
+                                    if (!longPress && singleTap) {
+                                        //..........................................comment out animation for now
+                                        smallTile.animate();
+                                        // ...
+                                        if (isAvailable(smallTile) && mSmallTiles[fLarge][fSmall].getAvailable()) {
+                                            //.....................................comment out thinking for now
+                                            //making other unvavalable
+                                            currentString += smallTile.getLetter();
+                                            int nomove = setNextAvailableFromLastMove(fLarge, fSmall);
+                                            //do the click
+                                            mSoundPool.play(mSoundX, mVolume / 2, mVolume / 2, 1, 0, 1f);
+                                            if (phase1 != -1) {
+                                                makeMove(fLarge, fSmall);
+                                            } else {
+                                                mLastLarge = fLarge;
+                                                mLastSmall = fSmall;
+                                                mSmallTiles[fLarge][fSmall].setAvailable(false);
+                                                setAvailableFromLastMove(fLarge);
+                                                updateAllTiles();
+                                            }
+                                            //.................comment think out for part one of this assignment 5
+                                            //think();
+                                        }
+                                    }
+                                    longPress = false;
+                                    singleTap = true;
+                                    break;
+                            }
                         }
                         return true;
                     }
@@ -509,6 +565,28 @@ public class TPWGGameFragment extends Fragment {
         }
         //adding letter to the board
         makeLetterBoard();
+
+        mDatabase.child("users").child(FirebaseInstanceId.getInstance().getToken()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                String token = FirebaseInstanceId.getInstance().getToken();
+                if (snapshot.exists()) {
+                    User user = snapshot.getValue(User.class);
+                    opponentId = user.playing;
+                    if (FirebaseInstanceId.getInstance().getToken().compareTo(opponentId) > 0) {
+                        myPlayer = TPWGTile.Owner.X;
+                        //mDatabase.child("users").child(token).child("data").setValue(getState());
+                        mDatabase.child("users").child(opponentId).child("data").setValue(getState());
+                    } else {
+                        myPlayer = TPWGTile.Owner.O;
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError firebaseError) {
+            }
+        });
     }
 
     private void think() {
@@ -598,6 +676,7 @@ public class TPWGGameFragment extends Fragment {
         }
 */
         updateAllTiles();
+        mDatabase.child("users").child(opponentId).child("data").setValue(getState());
 
     }
 
@@ -672,7 +751,7 @@ public class TPWGGameFragment extends Fragment {
             }
         }
         // If there were none available, make all squares available
-        if (mAvailable.isEmpty() && small == -1 || mAvailable.isEmpty() && currentScore[small] != maxInt && finishedBoard[small] == 1) {
+        if (mAvailable.isEmpty() && small == -1 || mAvailable.isEmpty() && currentScore[small] != maxInt && finishedBoard[small] != 0) {
             mAvailable.clear();
             setAllAvailable();
         }
@@ -703,6 +782,8 @@ public class TPWGGameFragment extends Fragment {
      */
     public String getState() {
         StringBuilder builder = new StringBuilder();
+        builder.append(FirebaseInstanceId.getInstance().getToken());
+        builder.append(',');
         builder.append(phase1);
         builder.append(',');
         builder.append(phase2);
@@ -727,7 +808,8 @@ public class TPWGGameFragment extends Fragment {
         for (int large = 0; large < 9; large++) {
             for (int small = 0; small < 9; small++) {
                 builder.append(mSmallTiles[large][small].getOwner().name());
-                builder.append(":" + mSmallTiles[large][small].getLetter());
+                builder.append(mSmallTiles[large][small].getAvailable() ? ":1:" : ":0:");
+                builder.append(mSmallTiles[large][small].getLetter());
                 builder.append(',');
             }
         }
@@ -746,6 +828,47 @@ public class TPWGGameFragment extends Fragment {
         restore = true;
         String[] fields = gameData.split(",");
         int index = 0;
+        index++; //skipping who sending this update
+        phase1 = Integer.parseInt(fields[index++]);
+        phase2 = Integer.parseInt(fields[index++]);
+        mLastLarge = Integer.parseInt(fields[index++]);
+        mLastSmall = Integer.parseInt(fields[index++]);
+        currentString = fields[index++];
+        //scores for large tiles
+        for (int i = 0; i < 9; i++) {
+            //index++;
+            currentScore[i] = Integer.parseInt(fields[index++]);
+        }
+        //check for finished board
+        for (int i = 0; i < 9; i++) {
+            finishedBoard[i] = Integer.parseInt(fields[index++]);
+        }
+        for (int large = 0; large < 9; large++) {
+            for (int small = 0; small < 9; small++) {
+                String[] values = fields[index++].split(":");
+                TPWGTile.Owner owner = TPWGTile.Owner.valueOf(values[0]);
+                mSmallTiles[large][small].setOwner(owner);
+                if (values.length > 2)
+                    mSmallTiles[large][small].setAvailable(values[1] == "1" ? true : false);
+                    mSmallTiles[large][small].setLetter(values[2]);
+            }
+        }
+        //putting the list of used words
+        for (int i = index; i < fields.length; i++) {
+            usedWords.add(fields[i]);
+        }
+
+        setUnavailableTiles(finishedBoard);
+        setNextAvailableFromLastMove(mLastLarge, mLastSmall);
+        setAvailableFromLastMove(mLastLarge);
+        updateAllTiles();
+    }
+
+
+    public void updateState(String gameData) {
+        String[] fields = gameData.split(",");
+        int index = 0;
+        index++; //skipping who sending this update
         phase1 = Integer.parseInt(fields[index++]);
         phase2 = Integer.parseInt(fields[index++]);
         mLastLarge = Integer.parseInt(fields[index++]);
@@ -764,8 +887,9 @@ public class TPWGGameFragment extends Fragment {
                 String[] values = fields[index++].split(":");
                 TPWGTile.Owner owner = TPWGTile.Owner.valueOf(values[0]);
                 mSmallTiles[large][small].setOwner(owner);
-                if (values.length > 1)
-                    mSmallTiles[large][small].setLetter(values[1]);
+                if (values.length > 2)
+                    mSmallTiles[large][small].setAvailable(values[1].equals("1"));
+                mSmallTiles[large][small].setLetter(values[2]);
             }
         }
         //putting the list of used words
@@ -779,14 +903,15 @@ public class TPWGGameFragment extends Fragment {
         updateAllTiles();
     }
 
+
     //tiles with out a score mean it has not yet touched
     //therefore set the scored tiles as unavailable
     private void setUnavailableTiles(int[] score) {
         if (phase1 != -1) {
             for (int i = 0; i < 9; i++) {
-                if (score[i] == 1) {
+                if (score[i] != 0) {
                     //set X as ower for finished tiles
-                    mLargeTiles[i].setOwner(TPWGTile.Owner.X);
+                    mLargeTiles[i].setOwner(score[i] == 1 ? TPWGTile.Owner.X : TPWGTile.Owner.O);
                     for (int k = 0; k < 9; k++) {
                         mSmallTiles[i][k].setAvailable(false);
                     }
@@ -802,6 +927,7 @@ public class TPWGGameFragment extends Fragment {
         }
     }
 
+
     @Override
     public void onPause() {
         super.onPause();
@@ -809,9 +935,16 @@ public class TPWGGameFragment extends Fragment {
     }
 
     @Override
+    public void onStop() {
+        super.onStop();
+        mDatabase.child("users").child(FirebaseInstanceId.getInstance().getToken()).removeEventListener(userEventListener);
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
         timeHandler.postDelayed(timerPhase, 0);
+        mDatabase.child("users").child(FirebaseInstanceId.getInstance().getToken()).addValueEventListener(userEventListener);
     }
 
     @Override

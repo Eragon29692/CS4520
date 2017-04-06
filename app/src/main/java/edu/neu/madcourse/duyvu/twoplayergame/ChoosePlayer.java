@@ -22,7 +22,6 @@ import java.util.ArrayList;
 
 import edu.neu.madcourse.duyvu.R;
 import edu.neu.madcourse.duyvu.twoplayergame.models.User;
-import edu.neu.madcourse.duyvu.wordgame.*;
 
 import static edu.neu.madcourse.duyvu.communication.MainActivity.USER_NAME;
 
@@ -54,7 +53,10 @@ public class ChoosePlayer extends AppCompatActivity {
                 String opponentId = ((User) adapter.getItemAtPosition(position)).userId;
                 mDatabase.child("users").child(FirebaseInstanceId.getInstance().getToken()).child("playing").setValue(opponentId);
                 mDatabase.child("users").child(FirebaseInstanceId.getInstance().getToken()).child("status").setValue("InGame");
+                mDatabase.child("users").child(FirebaseInstanceId.getInstance().getToken()).child("data").setValue("");
+                mDatabase.child("users").child(opponentId).child("data").setValue("");
                 Intent intent = new Intent(ChoosePlayer.this, TPWGGameActivity.class);
+                intent.putExtra("opponentId", opponentId);
                 startActivity(intent);
                 mDatabase.child("users").removeEventListener(childEventListener);
                 mDatabase.child(".info/connected").removeEventListener(valueEventListener);

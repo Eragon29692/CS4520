@@ -43,7 +43,7 @@ public class TPWGGameActivity extends AppCompatActivity {
     private int scoreDisplay = 0;
     public Globals dictionary;
     SharedPreferences sharedPreferences;
-    private float soundVolume = NORMAL_VOLUME;
+    private float soundVolume = 0f;//NORMAL_VOLUME;
     private Handler animationHandler = new Handler();
     private DatabaseReference mDatabase;
     Runnable animationTimer = new Runnable() {
@@ -57,11 +57,14 @@ public class TPWGGameActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.tpwgactivity_game);
         dictionary = (Globals) getApplication();
+        String opponentId = getIntent().getStringExtra("opponentId");
+
         mGameFragment = (TPWGGameFragment) getFragmentManager()
                 .findFragmentById(R.id.tpwgfragment_game);
+
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         boolean restore = getIntent().getBooleanExtra(KEY_RESTORE, false);
-        soundVolume = getIntent().getFloatExtra(SOUND_VOLUME, NORMAL_VOLUME);
+        soundVolume = getIntent().getFloatExtra(SOUND_VOLUME, 0f);
         mDatabase = FirebaseDatabase.getInstance().getReference();
         if (restore) {
             String gameData = sharedPreferences.getString(TPWGGameActivity.PREF_RESTORE, null);
@@ -189,10 +192,15 @@ public class TPWGGameActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        super.onStop();  // Always call the superclass method first
+        // Always call the superclass method first
+        finish();
+    }
+
+    @Override
+    public  void onDestroy() {
+        super.onDestroy();
         mDatabase.child("users").child(FirebaseInstanceId.getInstance().getToken()).child("status").setValue("Offline");
         mDatabase.child("users").child(FirebaseInstanceId.getInstance().getToken()).child("playing").setValue("");
-        finish();
     }
 }
 

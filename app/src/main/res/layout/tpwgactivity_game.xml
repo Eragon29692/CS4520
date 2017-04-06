@@ -33,7 +33,7 @@
 
                 <fragment
                     android:id="@+id/tpwgfragment_game_controls"
-                    class="edu.neu.madcourse.duyvu.wordgame.WGControlFragment"
+                    class="edu.neu.madcourse.duyvu.twoplayergame.TPWGControlFragment"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="top"
