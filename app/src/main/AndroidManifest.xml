@@ -99,6 +99,10 @@
             android:name=".twoplayergame.TPWGPausedActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.NoActionBar" />
+        <activity
+            android:name=".twoplayergame.LeaderBoard"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
 
     </application>
 

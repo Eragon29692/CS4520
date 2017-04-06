@@ -51,11 +51,45 @@
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/menu_button_margin"
             android:background="@drawable/dwround_blue_button"
-            android:text="@string/continue_label"
+            android:text="Start"
             android:fontFamily="casual"
             android:textAllCaps="true"
             android:textStyle="normal|bold"
             android:gravity="center"
             android:onClick="onClickChooseUsername"/>
+
+        <Button
+            android:id="@+id/tpwgcommunication_username_leader"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/menu_button_margin"
+            android:background="@drawable/dwround_blue_button"
+            android:text="Leaderboard"
+            android:fontFamily="casual"
+            android:textAllCaps="true"
+            android:textStyle="normal|bold"
+            android:gravity="center"/>
+        <Button
+            android:id="@+id/communication_username_ack"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/menu_button_margin"
+            android:background="@drawable/dwround_blue_button"
+            android:text="Acknowledgements"
+            android:fontFamily="casual"
+            android:textAllCaps="true"
+            android:textStyle="normal|bold"
+            android:gravity="center"/>
+        <Button
+            android:id="@+id/communication_username_quit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/menu_button_margin"
+            android:background="@drawable/dwround_blue_button"
+            android:text="Quit"
+            android:fontFamily="casual"
+            android:textAllCaps="true"
+            android:textStyle="normal|bold"
+            android:gravity="center"/>
     </LinearLayout>
 </RelativeLayout>

@@ -31,13 +31,38 @@
                 android:layout_weight="1"
                 android:orientation="vertical">
 
-                <fragment
-                    android:id="@+id/tpwgfragment_game_controls"
-                    class="edu.neu.madcourse.duyvu.twoplayergame.TPWGControlFragment"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="top"
-                    tools:layout="@layout/tpwgfragment_control" />
+                    android:layout_weight="1"
+                    android:orientation="horizontal">
+
+                    <fragment
+                        android:id="@+id/tpwgfragment_game_controls"
+                        class="edu.neu.madcourse.duyvu.twoplayergame.TPWGControlFragment"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="top"
+                        android:layout_weight="0.1"
+                        tools:layout="@layout/tpwgfragment_control" />
+
+                    <TextView
+                        android:id="@+id/tpwgbutton_restart"
+                        style="@style/Widget.AppCompat.Button.Colored"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="5dp"
+                        android:layout_weight="1"
+                        android:gravity="left|center"
+                        android:background="@drawable/dwround_white_textbox"
+                        android:elevation="@dimen/elevation_low"
+                        android:fontFamily="casual"
+                        android:text="Turn: "
+                        android:textStyle="normal|bold"
+                        android:layout_marginTop="5dp"
+                        android:textSize="14sp"
+                        android:paddingLeft="10dp" />
+                </LinearLayout>
 
                 <TextView
                     android:id="@+id/tpwgactivity_current_word"
@@ -58,10 +83,10 @@
             </LinearLayout>
 
             <LinearLayout
+                android:layout_width="100dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="0"
-                android:orientation="vertical"
-                android:layout_width="100dp">
+                android:orientation="vertical">
 
                 <TextView
                     android:id="@+id/tpwgactivity_game_score"

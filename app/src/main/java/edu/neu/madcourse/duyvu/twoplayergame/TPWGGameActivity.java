@@ -84,16 +84,22 @@ public class TPWGGameActivity extends AppCompatActivity {
         scorePanel.setText("Score: " + score);
     }
 
-    public void displayTime(int time) {
+    public void displayTime(int time, String name, boolean connectionStatus) {
         TextView timePanel = (TextView) findViewById(R.id.tpwgactivity_timer);
+        TextView turnPanel = (TextView) findViewById(R.id.tpwgbutton_restart);
         timePanel.setText("Time: " + Integer.toString(time));
+        if (connectionStatus) {
+            turnPanel.setText(("Turn: " + name));
+        } else {
+            turnPanel.setText(("NOT CONNECTED"));
+        }
     }
 
     public void displayWord(String word) {
         TextView scorePanel = (TextView) findViewById(R.id.tpwgactivity_current_word);
         scorePanel.setText(word);
     }
-
+/*
     public void onClickPausedButton(View view)
     {
         Intent intent = new Intent(TPWGGameActivity.this, TPWGPausedActivity.class);
@@ -101,7 +107,7 @@ public class TPWGGameActivity extends AppCompatActivity {
         finish();
         startActivity(intent);
     }
-
+*/
     public void animationForTimer(int time) {
         TextView timerPanel = (TextView) findViewById(R.id.tpwgactivity_timer);
         TimerRunnable timerRunnable = new TimerRunnable(time, timerPanel, animationHandler);

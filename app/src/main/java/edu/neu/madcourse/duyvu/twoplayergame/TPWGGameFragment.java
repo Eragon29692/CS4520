@@ -118,7 +118,7 @@ public class TPWGGameFragment extends Fragment {
     Runnable timerPhase = new Runnable() {
         public void run() {
             if (phase1 != -1) {
-                ((TPWGGameActivity) getActivity()).displayTime(phase1);
+                ((TPWGGameActivity) getActivity()).displayTime(phase1, (mPlayer == myPlayer ? "You" : "Opponent"), connectionStatus);
                 if (phase1 % 10 == 0) {
                     if ((phase1 / 10) % 2 == 1) {
                         mPlayer = TPWGTile.Owner.X;
@@ -131,7 +131,7 @@ public class TPWGGameFragment extends Fragment {
                     ((TPWGGameActivity) getActivity()).stopThinking();
                 }
             } else {
-                ((TPWGGameActivity) getActivity()).displayTime(phase2);
+                ((TPWGGameActivity) getActivity()).displayTime(phase2, "You", connectionStatus);
             }
             if (phase1 == 10) {
                 ((TPWGGameActivity) getActivity()).animationForTimer(9);
@@ -153,6 +153,8 @@ public class TPWGGameFragment extends Fragment {
                 ((TPWGGameActivity) getActivity()).animationForTimer(9);
             }
             if (phase1 == -1 && phase2 == 0) {
+                mDatabase.child("users").child(opponentId).child("score").setValue(calculateAndDisplayTotalScore() == 0 ? "-1" : Integer.toString(calculateAndDisplayTotalScore()));
+                /*
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                 builder.setMessage("TIME'S UP. YOUR SCORE IS " + calculateAndDisplayTotalScore());
                 builder.setCancelable(false);
@@ -166,6 +168,7 @@ public class TPWGGameFragment extends Fragment {
                             }
                         });
                 mDialog = builder.show();
+                */
             }
         }
     };
@@ -225,12 +228,49 @@ public class TPWGGameFragment extends Fragment {
                 User user = dataSnapshot.getValue(User.class);
                 if (user != null && !user.data.equals("") && user.data.substring(0, user.data.indexOf(",")).equals(opponentId)) {
                     updateState(user.data);
+                    calculateAndDisplayTotalScore();
+                }
+                if (user != null && !user.score.equals("0")) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    builder.setMessage(calculateAndDisplayTotalScore() > Integer.parseInt(user.score) ? "YOU HAVE WON" :
+                            (calculateAndDisplayTotalScore() == Integer.parseInt(user.score) ? "YOU HAVE TIED" : "YOU HAVE LOST"));
+                    mDatabase.child("users").child(FirebaseInstanceId.getInstance().getToken()).child("score").setValue("0");
+                    builder.setCancelable(false);
+
+                    builder.setPositiveButton(R.string.ok_label,
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    restartNoTimerAndSound();
+                                    getActivity().finish();
+                                }
+                            });
+                    mDialog = builder.show();
                 }
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
 
+            }
+        };
+
+        connectionEventListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                boolean connected = snapshot.getValue(Boolean.class);
+                if (connected) {
+                    connectionStatus = true;
+                    Log.d("mytag","connected");
+                } else {
+                    connectionStatus = false;
+                    Log.d("mytag","disconnected");
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                Log.d("mytag","listener canceled");
             }
         };
     }
@@ -256,10 +296,17 @@ public class TPWGGameFragment extends Fragment {
         super.onStart();
     }
 
+    private TPWGTile.Owner getOpponent(TPWGTile.Owner player) {
+        if (player == TPWGTile.Owner.X) {
+            return TPWGTile.Owner.O;
+        } else {
+            return TPWGTile.Owner.X;
+        }
+    }
     private int calculateAndDisplayTotalScore() {
         int total = 0;
         for (int i = 0; i < 9; i++) {
-            if (currentScore[i] != maxInt && mLargeTiles[i].getOwner() == myPlayer) {
+            if (currentScore[i] != maxInt && (mLargeTiles[i].getOwner() == myPlayer || mLargeTiles[i].getOwner() == TPWGTile.Owner.NEITHER)) {
                 total += currentScore[i] * scoreRatio;
             }
         }
@@ -277,7 +324,7 @@ public class TPWGGameFragment extends Fragment {
 
     private void flipBoardForPhase2() {
         for (int i = 0; i < 9; i++) {
-            mLargeTiles[i].setOwner(TPWGTile.Owner.NEITHER);
+            //mLargeTiles[i].setOwner(TPWGTile.Owner.NEITHER);
             if (mLargeTiles[i].getOwner() == TPWGTile.Owner.NEITHER || finishedBoard[i] == 0) {
                 mLargeTiles[i].setOwner(TPWGTile.Owner.UNAVAIL);
             } else {
@@ -313,6 +360,19 @@ public class TPWGGameFragment extends Fragment {
                 for (int i = 0; i < 9; i++) {
                     mSmallTiles[mLastLarge][i].setAvailable(false);
                     mLargeTiles[mLastLarge].setOwner(myPlayer);
+                }
+                //set all tiles to one player
+                for (int i = 0; i < 9; i++) {
+                    if (mSmallTiles[mLastLarge][i].getOwner() != myPlayer) {
+                        if (mSmallTiles[mLastLarge][i].getOwner() == TPWGTile.Owner.X) {
+                            mSmallTiles[mLastLarge][i].setOwner(TPWGTile.Owner.O);
+                        }
+                        else if (mSmallTiles[mLastLarge][i].getOwner() == TPWGTile.Owner.O) {
+                            mSmallTiles[mLastLarge][i].setOwner(TPWGTile.Owner.X);
+                        } else {
+                            //do nothing bad design :|
+                        }
+                    }
                 }
             } else {
                 ((TPWGGameActivity) getActivity()).displayWord(currentString);
@@ -356,7 +416,9 @@ public class TPWGGameFragment extends Fragment {
         calculateAndDisplayTotalScore();
         setAllAvailable();
         updateAllTiles();
-        mDatabase.child("users").child(opponentId).child("data").setValue(getState());
+        if (phase1 > 0) {
+            mDatabase.child("users").child(opponentId).child("data").setValue(getState());
+        }
     }
 
     private void onPressed() {
@@ -507,7 +569,7 @@ public class TPWGGameFragment extends Fragment {
                 inner.setOnTouchListener(new View.OnTouchListener() {
                     @Override
                     public boolean onTouch(View view, MotionEvent event) {
-                        if (mPlayer == myPlayer) {
+                        if (mPlayer == myPlayer && connectionStatus) {
                             switch (event.getAction()) {
                                 case MotionEvent.ACTION_DOWN:
                                     if (mLastLarge != -1 && mLastLarge == fLarge && mSmallTiles[fLarge][fSmall].getOwner() != TPWGTile.Owner.NEITHER
@@ -938,6 +1000,7 @@ public class TPWGGameFragment extends Fragment {
     public void onStop() {
         super.onStop();
         mDatabase.child("users").child(FirebaseInstanceId.getInstance().getToken()).removeEventListener(userEventListener);
+        mDatabase.child(".info/connected").removeEventListener(connectionEventListener);
     }
 
     @Override
@@ -945,6 +1008,7 @@ public class TPWGGameFragment extends Fragment {
         super.onResume();
         timeHandler.postDelayed(timerPhase, 0);
         mDatabase.child("users").child(FirebaseInstanceId.getInstance().getToken()).addValueEventListener(userEventListener);
+        mDatabase.child(".info/connected").addValueEventListener(connectionEventListener);
     }
 
     @Override

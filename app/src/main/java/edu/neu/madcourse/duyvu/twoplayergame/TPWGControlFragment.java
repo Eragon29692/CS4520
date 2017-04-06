@@ -24,7 +24,7 @@ public class TPWGControlFragment extends Fragment {
         View rootView =
                 inflater.inflate(R.layout.tpwgfragment_control, container, false);
         View main = rootView.findViewById(R.id.tpwgbutton_main);
-        View restart = rootView.findViewById(R.id.tpwgbutton_restart);
+        //View restart = rootView.findViewById(R.id.tpwgbutton_restart);
 
         main.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -32,12 +32,14 @@ public class TPWGControlFragment extends Fragment {
                 getActivity().finish();
             }
         });
+        /*
         restart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 ((TPWGGameActivity) getActivity()).restartGame();
             }
         });
+        */
         return rootView;
     }
 
