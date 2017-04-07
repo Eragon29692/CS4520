@@ -226,22 +226,34 @@ public class TPWGGameFragment extends Fragment {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 User user = dataSnapshot.getValue(User.class);
-                if (user != null && !user.data.equals("") && user.data.substring(0, user.data.indexOf(",")).equals(opponentId)) {
+                if (user != null && user.score.equals("0") && !user.data.equals("") && user.data.substring(0, user.data.indexOf(",")).equals(opponentId)) {
                     updateState(user.data);
                     calculateAndDisplayTotalScore();
                 }
                 if (user != null && !user.score.equals("0")) {
+                    mDatabase.child("users").child(FirebaseInstanceId.getInstance().getToken()).removeEventListener(userEventListener);
+                    mDatabase.child(".info/connected").removeEventListener(connectionEventListener);
+
                     AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                    builder.setMessage(calculateAndDisplayTotalScore() > Integer.parseInt(user.score) ? "YOU HAVE WON" :
-                            (calculateAndDisplayTotalScore() == Integer.parseInt(user.score) ? "YOU HAVE TIED" : "YOU HAVE LOST"));
+                    if (calculateAndDisplayTotalScore() > Integer.parseInt(user.score)) {
+                        builder.setMessage("YOU HAVE WON :)");
+                        mDatabase.child("users").child(FirebaseInstanceId.getInstance().getToken()).child("rankScore").setValue(Integer.toString(Integer.parseInt(user.rankScore) + 1));
+                    } else if (calculateAndDisplayTotalScore() < Integer.parseInt(user.score)) {
+                        builder.setMessage("YOU HAVE LOST :(");
+                        mDatabase.child("users").child(FirebaseInstanceId.getInstance().getToken()).child("rankScore").setValue(Integer.toString(Integer.parseInt(user.rankScore) - 1));
+                    } else {
+                        builder.setMessage("YOU HAVE TIED :|");
+                        //mDatabase.child("users").child(FirebaseInstanceId.getInstance().getToken()).child("rankScore").setValue(Integer.toString(Integer.parseInt(user.rankScore) - 1));
+                    }
                     mDatabase.child("users").child(FirebaseInstanceId.getInstance().getToken()).child("score").setValue("0");
+                    mDatabase.child("users").child(FirebaseInstanceId.getInstance().getToken()).child("data").setValue("");
                     builder.setCancelable(false);
 
                     builder.setPositiveButton(R.string.ok_label,
                             new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
-                                    restartNoTimerAndSound();
+                                    //restartNoTimerAndSound();
                                     getActivity().finish();
                                 }
                             });
@@ -324,6 +336,12 @@ public class TPWGGameFragment extends Fragment {
 
     private void flipBoardForPhase2() {
         for (int i = 0; i < 9; i++) {
+            if (mLargeTiles[i].getOwner() != myPlayer) {
+                currentScore[i] = maxInt;
+            }
+        }
+        mPlayer = myPlayer;
+        for (int i = 0; i < 9; i++) {
             //mLargeTiles[i].setOwner(TPWGTile.Owner.NEITHER);
             if (mLargeTiles[i].getOwner() == TPWGTile.Owner.NEITHER || finishedBoard[i] == 0) {
                 mLargeTiles[i].setOwner(TPWGTile.Owner.UNAVAIL);
@@ -403,7 +421,7 @@ public class TPWGGameFragment extends Fragment {
                     mSmallTiles[mLastLarge][i].setAvailable(true);
                 }
             }
-            addScore(-currentString.length() * scoreRatio);
+            //addScore(-currentString.length() * scoreRatio);
         }
         updateOnLongPress();
     }

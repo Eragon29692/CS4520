@@ -54,6 +54,8 @@ public class ChoosePlayer extends AppCompatActivity {
                 mDatabase.child("users").child(FirebaseInstanceId.getInstance().getToken()).child("playing").setValue(opponentId);
                 mDatabase.child("users").child(FirebaseInstanceId.getInstance().getToken()).child("status").setValue("InGame");
                 mDatabase.child("users").child(FirebaseInstanceId.getInstance().getToken()).child("data").setValue("");
+                mDatabase.child("users").child(FirebaseInstanceId.getInstance().getToken()).child("score").setValue("0");
+                //mDatabase.child("users").child(opponentId).child("score").setValue("0");
                 mDatabase.child("users").child(opponentId).child("data").setValue("");
                 Intent intent = new Intent(ChoosePlayer.this, TPWGGameActivity.class);
                 intent.putExtra("opponentId", opponentId);
@@ -92,6 +94,7 @@ public class ChoosePlayer extends AppCompatActivity {
                     Intent intent = new Intent(ChoosePlayer.this, TPWGGameActivity.class);
                     mDatabase.child("users").child(token).child("playing").setValue(user.userId);
                     mDatabase.child("users").child(token).child("status").setValue("InGame");
+                    mDatabase.child("users").child(token).child("score").setValue("0");
                     startActivity(intent);
                     ChoosePlayer.this.finish();
                 }
