@@ -87,7 +87,7 @@ public class MainMenu extends AppCompatActivity {
 
     public void onClickTrickiest(View view)
     {
-        Intent launchIntent = getPackageManager().getLaunchIntentForPackage("edu.neu.madcourse.priyankabh.numad17s_priyankabh.note2map");
+        Intent launchIntent = new Intent("edu.neu.madcourse.priyankabh.NOTE2MAPACTIVITY");
         if (launchIntent != null) {
             startActivity(launchIntent);//null pointer check in case package name was not found
         } else {
