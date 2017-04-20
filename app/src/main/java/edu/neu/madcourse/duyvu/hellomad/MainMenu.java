@@ -10,6 +10,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 import edu.neu.madcourse.duyvu.Globals;
@@ -82,6 +83,16 @@ public class MainMenu extends AppCompatActivity {
     {
         Intent intent = new Intent(this, ChooseUsername.class);
         startActivity(intent);
+    }
+
+    public void onClickTrickiest(View view)
+    {
+        Intent launchIntent = getPackageManager().getLaunchIntentForPackage("edu.neu.madcourse.priyankabh.numad17s_priyankabh.note2map");
+        if (launchIntent != null) {
+            startActivity(launchIntent);//null pointer check in case package name was not found
+        } else {
+            Log.d("app","app not found");
+        }
     }
 
     public void onClickQuit(View view)

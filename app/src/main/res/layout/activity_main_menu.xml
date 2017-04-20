@@ -118,6 +118,20 @@
             android:fontFamily="monospace" />
 
         <Button
+            android:text="Trickiest Part"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/trickiestButton"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:elevation="1dp"
+            android:background="@android:color/holo_blue_light"
+            android:layout_marginTop="5dp"
+            android:textSize="18sp"
+            android:onClick="onClickTrickiest"
+            android:fontFamily="monospace"
+            android:textStyle="normal|bold" />
+
+        <Button
             android:text="Quit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -130,6 +144,7 @@
             android:onClick="onClickQuit"
             android:fontFamily="monospace"
             android:textStyle="normal|bold" />
+
     </LinearLayout>
 
 </RelativeLayout>
