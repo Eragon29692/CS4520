@@ -7,8 +7,8 @@ android {
         applicationId "edu.neu.madcourse.duyvu"
         minSdkVersion 14
         targetSdkVersion 25
-        versionCode 12
-        versionName "8.0"
+        versionCode 14
+        versionName "11.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
