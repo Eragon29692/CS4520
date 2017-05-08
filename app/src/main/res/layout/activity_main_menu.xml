@@ -132,6 +132,19 @@
             android:textStyle="normal|bold" />
 
         <Button
+            android:text="Final Project"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:elevation="1dp"
+            android:background="@android:color/holo_blue_light"
+            android:layout_marginTop="5dp"
+            android:textSize="18sp"
+            android:onClick="onClickFinalProject"
+            android:fontFamily="monospace"
+            android:textStyle="normal|bold" />
+
+        <Button
             android:text="Quit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

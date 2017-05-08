@@ -87,7 +87,19 @@ public class MainMenu extends AppCompatActivity {
 
     public void onClickTrickiest(View view)
     {
+        /*
         Intent launchIntent = new Intent("edu.neu.madcourse.priyankabh.NOTE2MAPACTIVITY");
+        if (launchIntent != null) {
+            startActivity(launchIntent);//null pointer check in case package name was not found
+        } else {
+            Log.d("app","app not found");
+        }
+        */
+    }
+
+    public void onClickFinalProject(View view)
+    {
+        Intent launchIntent = new Intent("edu.neu.madcourse.priyankabh.finalprojectactivity.FINALPROJECTACTIVITY");
         if (launchIntent != null) {
             startActivity(launchIntent);//null pointer check in case package name was not found
         } else {
